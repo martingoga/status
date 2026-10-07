@@ -73,28 +73,31 @@ html body {
   text-rendering: optimizeLegibility;
 }
 
-/* Hero: big, tight-tracked, espresso */
+/* Hero: compact, tight-tracked, espresso */
 #sapper header {
-  padding: 2.5rem 0 0.5rem;
+  padding: 1.5rem 0 0.25rem;
 }
 #sapper h1 {
-  font-size: 2rem;
+  font-size: 1.65rem;
   font-weight: 700;
   letter-spacing: -0.025em;
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.45rem;
 }
 #sapper p.lead {
-  font-size: 1.02rem;
-  line-height: 1.6;
+  font-size: 0.95rem;
+  line-height: 1.55;
   color: #57534E;
   max-width: 560px;
 }
 
 /* Section titles: BookingPilot page-title weight */
 #sapper h2 {
-  font-size: 1.05rem;
+  font-size: 1.02rem;
   font-weight: 600;
   letter-spacing: -0.01em;
+}
+#sapper section + h2 {
+  margin-top: 1.4rem;
 }
 
 /* Incident card titles + uptime data */
@@ -163,6 +166,15 @@ html body {
 #sapper nav {
   font-weight: 500;
   padding: 0 1.25rem;
+  margin-bottom: 0.5rem;
+}
+#sapper nav a {
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
+}
+#sapper nav img {
+  height: 24px;
+  width: auto;
 }
 #sapper nav a {
   transition: color 0.12s ease;
@@ -175,7 +187,32 @@ html body {
   border-bottom-width: 2px;
 }
 
-/* ---------- Duration filter → chips ---------- */
+/* ---------- Duration filter: compact chip row on the section header ---------- */
+/* The Live Status section becomes a header row: title left, chips right.
+   Cards (and any other children) drop to full width underneath. */
+#sapper .live-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+#sapper .live-status h2 {
+  margin: 0 0 0.9rem;
+}
+#sapper .live-status > *:not(h2) {
+  flex-shrink: 0;
+}
+#sapper .live-status article,
+#sapper .live-status > div:not(form) {
+  flex: 0 0 100%;
+  box-sizing: border-box;
+}
+#sapper .live-status form {
+  display: inline-flex;
+  gap: 8px;
+  margin-bottom: 0.9rem;
+}
+
 #sapper form input[type='radio'] {
   position: absolute;
   opacity: 0;
@@ -185,13 +222,13 @@ html body {
 }
 #sapper form label {
   display: inline-block;
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 500;
   color: #57534E;
   background: #F4F2EF;
   border: 1px solid transparent;
   border-radius: 999px;
-  padding: 0.35rem 0.9rem;
+  padding: 0.3rem 0.8rem;
   cursor: pointer;
   transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
 }
