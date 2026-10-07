@@ -1,0 +1,184 @@
+# BookingPilot status page — Upptime configuration.
+#
+# This file lives in the SEPARATE status repository (martingoga/status),
+# created from the github.com/upptime/upptime template — NOT in the app
+# repo. See README.md in this directory for the full setup steps.
+# Regen marker: bumped to re-run Setup CI and re-register cron schedules.
+# (Safe to remove.)
+
+owner: martingoga
+repo: status
+user-agent: BookingPilot-Status
+
+sites:
+  # The SPA itself. Deliberately kept pointing at bookingpilot.al while the
+  # domain is unregistered — the red component is a standing reminder; when
+  # the domain ships, delete history/web-app.yml + close the incident issue
+  # so pre-launch red doesn't poison historical uptime.
+  - name: Web app
+    url: https://bookingpilot.al
+    icon: https://martingoga.github.io/status/logo.svg
+    maxResponseTime: 10000
+
+  # Edge function that does a real Postgres round-trip: "up" means the
+  # whole gateway -> PostgREST -> DB path works, not just that it loads.
+  - name: API & database
+    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health
+    icon: https://martingoga.github.io/status/icons/db.svg
+    expectedStatusCodes:
+      - 200
+    __dangerous__body_down_if_text_missing: '"status":"ok"'
+    maxResponseTime: 8000
+
+  # Direct probe that bypasses the edge-function runtime: hits PostgREST
+  # straight. The anon key in the URL is the public client key (already in
+  # every browser bundle). RLS denies the read -> 401 still proves the
+  # gateway is alive; only a timeout/5xx means it isn't. Purpose: when the
+  # function-backed checks all go red but this stays green, it's the edge
+  # runtime that's down, not the platform.
+  - name: Gateway & PostgREST
+    url: https://ofhkpirywmghuoemqwuu.supabase.co/rest/v1/rpc/health_ping?apikey=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9maGtwaXJ5d21naHVvZW1xd3V1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkzOTk0MzMsImV4cCI6MjEwNDk3NTQzM30.nxN8c3Wyq0MWbPjHPALNNqVBgFCXI4zAI9HzwFJ48U0
+    icon: https://martingoga.github.io/status/icons/bolt.svg
+    expectedStatusCodes:
+      - 200
+      - 401
+    maxResponseTime: 8000
+
+  # Same function, auth component — probes GoTrue server-side.
+  - name: Authentication
+    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=auth
+    icon: https://martingoga.github.io/status/icons/shield.svg
+    expectedStatusCodes:
+      - 200
+    __dangerous__body_down_if_text_missing: '"status":"ok"'
+    maxResponseTime: 8000
+
+  # Direct GoTrue liveness, no edge function in the path. Verified: returns
+  # 200 with ?apikey=<anon>. Separates "auth service down" from "edge
+  # runtime down".
+  - name: Auth service (direct)
+    url: https://ofhkpirywmghuoemqwuu.supabase.co/auth/v1/health?apikey=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9maGtwaXJ5d21naHVvZW1xd3V1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkzOTk0MzMsImV4cCI6MjEwNDk3NTQzM30.nxN8c3Wyq0MWbPjHPALNNqVBgFCXI4zAI9HzwFJ48U0
+    icon: https://martingoga.github.io/status/icons/shield.svg
+    expectedStatusCodes:
+      - 200
+    maxResponseTime: 8000
+
+  # Booking pipeline — real read on the reservations table.
+  - name: Reservations
+    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=reservations
+    icon: https://martingoga.github.io/status/icons/cal.svg
+    expectedStatusCodes:
+      - 200
+    __dangerous__body_down_if_text_missing: '"status":"ok"'
+    maxResponseTime: 8000
+
+  # Supabase Realtime — websocket endpoint liveness.
+  - name: Realtime
+    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=realtime
+    icon: https://martingoga.github.io/status/icons/pulse.svg
+    expectedStatusCodes:
+      - 200
+    __dangerous__body_down_if_text_missing: '"status":"ok"'
+    maxResponseTime: 8000
+
+  # File storage — real listing on the hk-attachments bucket.
+  - name: File storage
+    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=storage
+    icon: https://martingoga.github.io/status/icons/db.svg
+    expectedStatusCodes:
+      - 200
+    __dangerous__body_down_if_text_missing: '"status":"ok"'
+    maxResponseTime: 8000
+
+  # Transactional email — Resend API reachability + key presence.
+  - name: Email delivery
+    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=email
+    icon: https://martingoga.github.io/status/icons/mail.svg
+    expectedStatusCodes:
+      - 200
+    __dangerous__body_down_if_text_missing: '"status":"ok"'
+    maxResponseTime: 8000
+
+  # OTA distribution — api.channex.io reachability + API-key validity
+  # (401 while a key is configured = down; the key IS the pipeline).
+  - name: Channel manager
+    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=channex
+    icon: https://martingoga.github.io/status/icons/plug.svg
+    expectedStatusCodes:
+      - 200
+    __dangerous__body_down_if_text_missing: '"status":"ok"'
+    maxResponseTime: 8000
+
+  # Dead-man's switch — monitor_heartbeats row must be <20 min old; the
+  # beat is written by pg_cron every 5 min, so a stale beat means the
+  # scheduler (or DB writes) silently died.
+  - name: Schedulers
+    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=jobs
+    icon: https://martingoga.github.io/status/icons/clock.svg
+    expectedStatusCodes:
+      - 200
+    __dangerous__body_down_if_text_missing: '"status":"ok"'
+    maxResponseTime: 8000
+
+  # OTA sync freshness — a 'connected' property whose last_sync_at is >20
+  # min old (or never stamped) means bookings stopped flowing even though
+  # api.channex.io answers pings.
+  - name: Sync pipeline
+    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=sync
+    icon: https://martingoga.github.io/status/icons/pulse.svg
+    expectedStatusCodes:
+      - 200
+    __dangerous__body_down_if_text_missing: '"status":"ok"'
+    maxResponseTime: 8000
+
+  # Public functions that can't carry a JWT — send-email auth hook,
+  # channex/resend webhooks, guest-checkin, unsubscribe. Up = deployed and
+  # answering (4xx expected); 404 or 5xx = broken. These are the functions
+  # that fail silently and hurt the most (auth emails, OTA bookings).
+  - name: Webhooks & hooks
+    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=edge
+    icon: https://martingoga.github.io/status/icons/link.svg
+    expectedStatusCodes:
+      - 200
+    __dangerous__body_down_if_text_missing: '"status":"ok"'
+    maxResponseTime: 8000
+
+  # AI assistant — api.groq.com reachability + GROQ_API_KEY validity.
+  - name: AI assistant
+    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=groq
+    icon: https://martingoga.github.io/status/icons/spark.svg
+    expectedStatusCodes:
+      - 200
+    __dangerous__body_down_if_text_missing: '"status":"ok"'
+    maxResponseTime: 8000
+
+  # This very page — catches a GitHub Pages outage (can't catch an Actions
+  # outage; nothing would run to check anything).
+  - name: Status page
+    url: https://martingoga.github.io/status/
+    icon: https://martingoga.github.io/status/logo.svg
+    maxResponseTime: 10000
+
+status-website:
+  # Until the domain is registered the page lives at
+  # https://martingoga.github.io/status — hence baseUrl.
+  baseUrl: /status
+  # When status.bookingpilot.al exists: set the CNAME DNS record, then
+  # uncomment cname and delete baseUrl (logo/favicon/theme URLs also
+  # become https://status.bookingpilot.al/<file>).
+  # cname: status.bookingpilot.al
+  name: BookingPilot Status
+  introTitle: System status
+  introMessage: Live status of the BookingPilot platform. Incident history and uptime are below. During an outage, check back here for updates.
+  logoUrl: https://martingoga.github.io/status/logo.svg
+  faviconSvg: https://martingoga.github.io/status/logo.svg
+  # ?v= busts browser/service-worker cache when iterating on the design —
+  # bump it whenever theme.css changes don't show up.
+  themeUrl: https://martingoga.github.io/status/theme.css?v=5
+  navbar:
+    - title: Status
+      href: /
+    - title: BookingPilot
+      href: https://bookingpilot.al
+    - title: Report an issue
+      href: https://github.com/martingoga/status/issues

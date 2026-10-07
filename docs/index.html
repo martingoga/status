@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BookingPilot Status</title>
+<meta name="description" content="Live status of the BookingPilot platform.">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<style>
+  @font-face { font-family: 'Host Grotesk'; src: url('fonts/host-grotesk-latin-400-normal.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+  @font-face { font-family: 'Host Grotesk'; src: url('fonts/host-grotesk-latin-500-normal.woff2') format('woff2'); font-weight: 500; font-display: swap; }
+  @font-face { font-family: 'Host Grotesk'; src: url('fonts/host-grotesk-latin-600-normal.woff2') format('woff2'); font-weight: 600; font-display: swap; }
+  @font-face { font-family: 'Host Grotesk'; src: url('fonts/host-grotesk-latin-700-normal.woff2') format('woff2'); font-weight: 700; font-display: swap; }
+
+  :root {
+    --bg: #FBFBF9;
+    --card: #ffffff;
+    --border: #E7E5E4;
+    --text: #1C1917;
+    --text-2: #44403C;
+    --text-3: #78716C;
+    --accent: #FA4616;
+    --accent-hover: #E03F13;
+    --sand: #F4F2EF;
+    --sand-hover: #ECE9E6;
+    --green: #16A34A; --green-bg: #F0FDF4; --green-border: #BBF7D0;
+    --amber: #D97706; --amber-bg: #FFFBEB; --amber-border: #FDE68A;
+    --red: #DC2626;   --red-bg: #FEF2F2;   --red-border: #FECACA;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  body {
+    font-family: 'Host Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    font-size: 15px;
+  }
+  a { color: var(--accent); text-decoration: none; font-weight: 500; }
+  a:hover { color: var(--accent-hover); }
+
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 0 32px; }
+
+  /* ---------- Topbar (mirrors app .topbar: 64px, white, hairline) ---------- */
+  .topbar {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 10;
+  }
+  .topbar .wrap { display: flex; align-items: center; height: 64px; gap: 12px; }
+  .topbar img.logo { height: 26px; width: auto; }
+  .topbar .page-title {
+    font-size: 18px; line-height: 22px; font-weight: 600;
+    letter-spacing: -0.01em; color: var(--text);
+  }
+  .topbar .page-sub {
+    font-size: 12px; line-height: 16px; color: var(--text-3); font-weight: 300;
+  }
+  .topbar .title-stack { display: flex; flex-direction: column; }
+  .topbar .spacer { flex: 1; }
+  .btn-sand {
+    display: inline-flex; align-items: center; height: 36px; padding: 0 14px;
+    background: var(--sand); border-radius: 10px;
+    font-size: 13px; font-weight: 500; color: var(--text-2);
+    transition: background .12s ease;
+  }
+  .btn-sand:hover { background: var(--sand-hover); color: var(--text); }
+
+  /* ---------- Overall status bar (solid, statuspage-style) ---------- */
+  .statusbar {
+    margin: 24px 0 8px;
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: flex; align-items: center; gap: 10px;
+    color: #fff; font-weight: 600; font-size: 0.95rem; letter-spacing: -0.005em;
+  }
+  .statusbar svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .statusbar .sub { font-weight: 400; font-size: 0.82rem; opacity: .85; margin-left: auto; }
+  .statusbar.ok { background: var(--green); }
+  .statusbar.warn { background: var(--amber); }
+  .statusbar.down { background: var(--red); }
+  .statusbar.unknown { background: var(--text-3); }
+
+  /* ---------- Slim banners (stale monitor data / scheduled maintenance) ---------- */
+  .slimbar {
+    margin: 0 0 8px; padding: 9px 16px; border-radius: 10px;
+    font-size: 0.84rem; font-weight: 500;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .slimbar svg { width: 15px; height: 15px; flex-shrink: 0; }
+  .slimbar.warn { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+  .slimbar.info { background: var(--sand); color: var(--text-2); border: 1px solid var(--border); }
+
+  /* ---------- Current-status heading ---------- */
+  .cur-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 12px; margin: 36px 0 20px; flex-wrap: wrap;
+  }
+  .cur-head h2 { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; }
+  .cur-head .note { font-size: 0.85rem; color: var(--text-3); }
+  .cur-head .note a { font-weight: 500; }
+
+  /* ---------- Sections ---------- */
+  .section-head {
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 12px; margin: 28px 0 20px;
+  }
+  .section-head h2 { font-size: 0.98rem; font-weight: 600; letter-spacing: -0.01em; }
+
+  .pill {
+    font-size: 0.68rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+    border-radius: 999px; padding: 3px 10px; white-space: nowrap;
+  }
+  .pill.up { background: var(--green-bg); color: var(--green); }
+  .pill.down { background: var(--red-bg); color: var(--red); }
+
+  /* ---------- Component grid (single bordered container, hairline cells) ---------- */
+  .comp-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(28,25,23,.03);
+  }
+  @media (max-width: 700px) {
+    .comp-grid { grid-template-columns: 1fr; }
+    .comp-grid .comp { border-right: none !important; }
+  }
+  .comp { position: relative; padding: 20px 22px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .comp:nth-child(2n) { border-right: none; }
+  .comp:nth-last-child(-n+2) { border-bottom: none; }
+  @media (max-width: 700px) {
+    .comp:nth-last-child(-n+2) { border-bottom: 1px solid var(--border); }
+    .comp:last-child { border-bottom: none; }
+  }
+  .comp .row { display: flex; align-items: center; gap: 10px; }
+  .comp .name { font-weight: 600; font-size: 0.92rem; flex: 1; min-width: 0; }
+  .comp .ms { color: var(--text-3); font-size: 0.78rem; font-weight: 400; white-space: nowrap; }
+  .comp .check { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center; color: #fff; }
+  .comp .check svg { width: 12px; height: 12px; }
+  .comp .check.up { background: var(--green); }
+  .comp .check.degraded { background: var(--amber); }
+  .comp .check.down { background: var(--red); }
+  .comp .check.unknown { background: var(--text-3); }
+
+  /* 90-day uptime bars */
+  .bars { display: flex; gap: 2px; margin-top: 14px; height: 34px; align-items: stretch; }
+  .bars i { flex: 1; border-radius: 2px; background: #4ADE80; }
+  .bars i.nodata { background: #EFEDEA; }
+  .bars i.partial { background: #FBBF24; }
+  .bars i.down { background: #F33535; }
+  .bars i:hover { filter: brightness(0.82); }
+
+  /* ---------- Day-bar tooltip ---------- */
+  .daytip {
+    position: absolute; display: none; z-index: 20;
+    background: #fff; border: 1px solid var(--border); border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(28,25,23,.10), 0 2px 6px rgba(28,25,23,.06);
+    padding: 12px 16px; min-width: 210px; pointer-events: none;
+    transform: translateX(-50%);
+  }
+  .daytip::after {
+    content: ''; position: absolute; left: var(--ax, 50%); bottom: -6px;
+    width: 10px; height: 10px; background: #fff;
+    border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    transform: translateX(-50%) rotate(45deg);
+  }
+  .daytip .dt-date { font-weight: 600; font-size: 0.92rem; margin-bottom: 6px; }
+  .daytip .dt-msg { font-size: 0.84rem; color: var(--text-2); }
+  .daytip .dt-row {
+    display: flex; justify-content: space-between; gap: 18px;
+    background: var(--sand); border-radius: 6px; padding: 7px 12px;
+    font-size: 0.84rem;
+  }
+  .daytip .dt-row b { font-weight: 600; }
+
+  .comp .axis {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 10px; margin-top: 8px; font-size: 0.75rem; color: var(--text-3);
+  }
+  .comp .axis b { color: var(--text); font-weight: 600; white-space: nowrap; }
+  .comp .axis .ln { flex: 1; height: 1px; background: var(--border); min-width: 24px; }
+  .comp .axis > span { white-space: nowrap; }
+  .comp .state-line { font-size: 0.8rem; color: var(--text-3); margin-top: 8px; }
+  .comp .state-line.bad { color: var(--red); }
+
+  /* ---------- Per-component "?" help badge (GitHub-style) ---------- */
+  .help {
+    position: relative; display: inline-flex; align-items: center;
+    margin-left: 7px; vertical-align: -1px; color: var(--text-3); cursor: help;
+  }
+  .help:hover, .help:focus-visible { color: var(--accent); }
+  .help svg { width: 13px; height: 13px; }
+  .help:focus { outline: none; }
+  .help-pop {
+    position: absolute; display: none; z-index: 30;
+    top: calc(100% + 8px); left: -8px;
+    width: 270px; max-width: calc(100vw - 56px);
+    background: #fff; border: 1px solid var(--border); border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(28,25,23,.10), 0 2px 6px rgba(28,25,23,.06);
+    padding: 12px 15px;
+    font-size: 0.82rem; font-weight: 400; line-height: 1.5;
+    color: var(--text-2); text-align: left; letter-spacing: 0;
+    cursor: default; white-space: normal;
+  }
+  .help:hover .help-pop, .help:focus .help-pop, .help:focus-within .help-pop { display: block; }
+
+  /* ---------- Incidents ---------- */
+  .incident {
+    border: 1px solid var(--border); border-radius: 16px; background: var(--card);
+    padding: 14px 18px; margin-bottom: 10px;
+  }
+  .incident.active { border-color: var(--red-border); background: var(--red-bg); }
+  .incident .i-title { font-weight: 600; font-size: 0.92rem; }
+  .incident .i-meta { font-size: 0.82rem; color: var(--text-3); margin-top: 3px; }
+  .incident .i-state { float: right; }
+  .empty { color: var(--text-3); font-size: 0.9rem; padding: 8px 0 4px; }
+
+  /* ---------- Footer ---------- */
+  footer {
+    margin-top: 40px; padding: 22px 0 30px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 0.82rem; color: var(--text-3);
+  }
+  footer a { color: var(--text-3); }
+  footer a:hover { color: var(--accent); }
+
+  .updated { font-size: 0.8rem; color: var(--text-3); }
+
+  @media (max-width: 560px) {
+    .statusbar { padding: 12px 14px; }
+    .section-head { flex-wrap: wrap; gap: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <img class="logo" src="logo.svg" alt="BookingPilot">
+    <div class="title-stack">
+      <div class="page-title">Status</div>
+      <div class="page-sub">BookingPilot platform health</div>
+    </div>
+    <div class="spacer"></div>
+    <a class="btn-sand" href="https://bookingpilot.al">bookingpilot.al</a>
+    <a class="btn-sand" href="https://github.com/martingoga/status/issues">Report an issue</a>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="statusbar unknown" id="statusbar">
+    <svg id="statusbarIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><circle cx="12" cy="16" r="0.5" fill="currentColor"/></svg>
+    <span id="statusbarText">Checking status…</span>
+    <span class="sub" id="statusbarSub"></span>
+  </div>
+
+  <div class="slimbar warn" id="stalebar" style="display:none">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+    <span id="stalebarText"></span>
+  </div>
+  <div class="slimbar info" id="maintbar" style="display:none">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+    <span id="maintbarText"></span>
+  </div>
+
+  <div class="cur-head">
+    <h2>Current Status: <span style="font-weight:400">BookingPilot</span></h2>
+    <span class="note">Uptime over the past 90 days. <a href="#incidents">View historical uptime.</a></span>
+  </div>
+  <div class="comp-grid" id="components"></div>
+
+  <div class="section-head"><h2>Incidents</h2></div>
+  <div id="incidents"><div class="empty">Loading…</div></div>
+
+  <footer>
+    <span id="updatedLine">Monitored by BookingPilot</span>
+    <a href="https://github.com/martingoga/status/issues">Report an issue</a>
+  </footer>
+</div>
+
+<script>
+const REPO = 'martingoga/status';
+const SUMMARY_URL = `https://raw.githubusercontent.com/${REPO}/master/history/summary.json`;
+const ISSUES_URL = `https://api.github.com/repos/${REPO}/issues?state=all&labels=status&per_page=30&sort=created&direction=desc`;
+
+const LABEL = { up: 'Operational', degraded: 'Degraded', down: 'Down' };
+const DAYS = 90;
+
+let SITES = [];
+let ISSUES = [];
+let repoCreated = 0;
+let lastDataAt = 0;
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmtDate = (d) => new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+const fmtMins = (ms) => {
+  const m = Math.round(ms / 60000);
+  if (m < 60) return m + 'm';
+  const h = Math.floor(m / 60);
+  return h + 'h ' + (m % 60) + 'm';
+};
+const fmtMs = (ms) => ms >= 1000 ? (ms / 1000).toFixed(1) + 's' : Math.round(ms) + 'ms';
+const ago = (d) => {
+  const s = Math.max(0, (Date.now() - new Date(d)) / 1000);
+  if (s < 90) return 'just now';
+  if (s < 3600) return Math.floor(s / 60) + 'm ago';
+  if (s < 86400) return Math.floor(s / 3600) + 'h ago';
+  return Math.floor(s / 86400) + 'd ago';
+};
+
+/* Public view: only client-meaningful components render. Hidden monitors
+   still run and still open issues — they're internal probes (direct service
+   checks, cron dead-man, webhook liveness) that keep operators informed
+   without confusing visitors. Friendly names live HERE, not in
+   .upptimerc.yml — renaming a monitor there changes its slug and wipes its
+   uptime history. */
+const DISPLAY = {
+  'web-app': 'Website',
+  'api-and-database': 'Platform API',
+  'authentication': 'Login & accounts',
+  'reservations': 'Bookings',
+  'email-delivery': 'Email',
+  'sync-pipeline': 'Booking channel sync',
+  'realtime': 'Live updates',
+  'ai-assistant': 'AI assistant',
+};
+const publicSites = () => SITES.filter(s => s.slug in DISPLAY);
+
+function overallState() {
+  const v = publicSites();
+  if (!v.length) return 'unknown';
+  if (v.every(s => s.status === 'up')) return 'ok';
+  if (v.every(s => s.status === 'down')) return 'down';
+  return 'warn';
+}
+
+function renderStatusbar() {
+  const st = overallState();
+  const conf = {
+    ok:      ['ok',      'All Systems Operational'],
+    warn:    ['warn',    'Partial Service Disruption'],
+    down:    ['down',    'Major Outage'],
+    unknown: ['unknown', 'Status Unavailable'],
+  }[st];
+  const icons = {
+    ok:      '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/>',
+    warn:    '<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4"/><circle cx="12" cy="17" r="0.6" fill="currentColor"/>',
+    down:    '<circle cx="12" cy="12" r="9"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>',
+    unknown: '<circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><circle cx="12" cy="16" r="0.5" fill="currentColor"/>',
+  };
+  $('statusbar').className = 'statusbar ' + conf[0];
+  $('statusbarIcon').innerHTML = icons[conf[0]];
+  $('statusbarText').textContent = conf[1];
+  const v = publicSites();
+  const upCount = v.filter(s => s.status === 'up').length;
+  $('statusbarSub').textContent = v.length ? `${upCount} of ${v.length} operational` : '';
+}
+
+/* Per-component per-day downtime (minutes), over the last DAYS days.
+   Primary source is Upptime's own dailyMinutesDown in summary.json —
+   per-check granularity, full history, and no dependence on the
+   rate-limited issues API. Day boundaries are UTC because Upptime keys
+   dailyMinutesDown by UTC date. Incident-issue windows remain as a
+   fallback for sites missing the field. */
+let dayWindows = {};
+const dayMs = 86400000;
+const dayStart = (t) => { const d = new Date(t); return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()); };
+const fmtDay = (t) => new Date(t).toLocaleDateString('en-GB', { timeZone: 'UTC', day: 'numeric', month: 'short', year: 'numeric' });
+
+function issueSlug(i) {
+  const byLabel = (i.labels || []).map(l => l.name).find(n => n !== 'status' && n in dayWindows);
+  if (byLabel) return byLabel;
+  const t = (i.title || '').toLowerCase();
+  const hit = SITES.find(s =>
+    t.includes(s.name.toLowerCase()) || t.includes(s.slug.replace(/-/g, ' ')));
+  return hit ? hit.slug : null;
+}
+
+function computeDayWindows() {
+  dayWindows = {};
+  const now = Date.now();
+  SITES.forEach(s => { dayWindows[s.slug] = new Array(DAYS).fill(0); });
+  SITES.forEach(s => {
+    const dmd = s.dailyMinutesDown;
+    if (!dmd) return;
+    for (let d = 0; d < DAYS; d++) {
+      const key = new Date(dayStart(now - (DAYS - 1 - d) * dayMs)).toISOString().slice(0, 10);
+      if (dmd[key]) dayWindows[s.slug][d] = dmd[key];
+    }
+  });
+  ISSUES.forEach(i => {
+    const slug = issueSlug(i);
+    if (!slug) return;
+    const site = SITES.find(s => s.slug === slug);
+    if (site && site.dailyMinutesDown) return;
+    const t0 = new Date(i.created_at).getTime();
+    const t1 = i.closed_at ? new Date(i.closed_at).getTime() : now;
+    for (let d = 0; d < DAYS; d++) {
+      const ds = dayStart(now - (DAYS - 1 - d) * dayMs);
+      const ov = Math.max(0, Math.min(t1, ds + dayMs) - Math.max(t0, ds));
+      if (ov > 0) dayWindows[slug][d] += ov / 60000;
+    }
+  });
+}
+
+/* Plain-language description of each component, shown by the "?" badge on
+   its card header (same pattern as githubstatus.com). Keyed by site slug.
+   Written for non-technical readers: short sentences, everyday words. */
+const DESC = {
+  'web-app': 'The BookingPilot website. This is what you open in a browser to use the platform.',
+  'api-and-database': 'The main system behind the app. It stores bookings, rooms and guest records.',
+  'gateway-and-postg-rest': 'The connection between the app and its database, checked directly.',
+  'authentication': 'Signing in and creating accounts.',
+  'auth-service-direct': 'The sign-in service checked on its own. This helps us find where a problem is.',
+  'reservations': 'Making and viewing reservations.',
+  'realtime': 'Instant updates on your screen, like new bookings or task changes.',
+  'file-storage': 'Uploading and downloading files and attachments.',
+  'email-delivery': 'Automatic emails like booking confirmations, sign-in links and receipts.',
+  'channel-manager': 'The connection that sends your rooms and prices to Booking.com, Airbnb and other booking sites.',
+  'schedulers': 'Automatic background tasks that run every few minutes, like syncing and cleanups.',
+  'sync-pipeline': 'How fresh the booking channel sync is. Catches bookings that stopped arriving.',
+  'webhooks-and-hooks': 'The inboxes that receive updates from email and booking providers.',
+  'ai-assistant': 'The AI assistant inside the app.',
+  'status-page': 'This page itself. Confirms the status site is reachable.',
+};
+
+const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 13 4 4L19 7"/></svg>';
+const CROSS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 7 10 10M17 7 7 17"/></svg>';
+const WARN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6v8"/><circle cx="12" cy="17" r="0.4" fill="currentColor"/></svg>';
+
+function renderComponents() {
+  const visible = publicSites();
+  if (!visible.length) { $('components').innerHTML = '<div class="empty">No components configured.</div>'; return; }
+  const now = Date.now();
+  $('components').innerHTML = visible.map(s => {
+    const st = (s.status || '').toLowerCase();
+    const cls = st === 'up' ? 'up' : st === 'down' ? 'down' : st === 'degraded' ? 'degraded' : 'unknown';
+    // Down with an open incident → the outage has been continuous since the
+    // incident opened (every check fails). Use that duration for today so
+    // the tooltip agrees with "Down · for Xh" — recorded check minutes alone
+    // undercount whenever checks run sparsely (scheduler lag, missed cron).
+    const mins = [...(dayWindows[s.slug] || new Array(DAYS).fill(0))];
+    const openInc = ISSUES.find(i => i.state === 'open' && issueSlug(i) === s.slug);
+    const dur = openInc ? now - new Date(openInc.created_at).getTime() : 0;
+    if (cls === 'down' && dur > 0) {
+      mins[DAYS - 1] = Math.max(mins[DAYS - 1], dur / 60000);
+    }
+
+    const bars = mins.map((m, d) => {
+      const ds = dayStart(now - (DAYS - 1 - d) * dayMs);
+      const date = fmtDay(ds);
+      if (repoCreated && ds + dayMs < repoCreated) return `<i class="nodata" data-d="${date}"></i>`;
+      if (d === DAYS - 1 && cls === 'down') return `<i class="down" data-d="${date}" data-m="${Math.round(m)}"></i>`;
+      if (d === DAYS - 1 && cls !== 'up') return `<i class="partial" data-d="${date}" data-m="${Math.round(m)}"></i>`;
+      if (m >= 720) return `<i class="down" data-d="${date}" data-m="${Math.round(m)}"></i>`;
+      if (m > 0) return `<i class="partial" data-d="${date}" data-m="${Math.round(m)}"></i>`;
+      return `<i data-d="${date}" data-m="0"></i>`;
+    }).join('');
+
+    // Denominator counts only minutes actually monitored: pre-repo days are
+    // excluded, and today counts elapsed minutes since UTC midnight (or
+    // since the repo existed), not the full 1440.
+    let downMin = 0, monitoredMin = 0;
+    mins.forEach((m, d) => {
+      const ds = dayStart(now - (DAYS - 1 - d) * dayMs);
+      const start = Math.max(ds, repoCreated || 0);
+      const end = Math.min(ds + dayMs, now);
+      if (end <= start) return;
+      monitoredMin += (end - start) / 60000;
+      downMin += m;
+    });
+    const upPct = monitoredMin > 0 ? Math.max(0, (1 - downMin / monitoredMin) * 100) : null;
+
+    // "Down · for 2h 14m" — duration from the open incident's created_at.
+    const dh = Math.floor(dur / 3600000), dm = Math.floor((dur % 3600000) / 60000);
+    const stateText = cls === 'up' ? 'Normal'
+      : cls === 'down' ? 'Down' + (dur > 0 ? ` · for ${dh > 0 ? dh + 'h ' : ''}${dm}m` : '')
+      : (LABEL[cls] || 'Unknown');
+
+    return `
+    <div class="comp">
+      <div class="row">
+        <span class="name">${esc(DISPLAY[s.slug] || s.name)}<span class="help" tabindex="0" role="button" aria-label="What is ${esc(s.name)}?"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.2"/><path d="M9.4 9.2a2.6 2.6 0 1 1 3.8 2.3c-.8.5-1.2.9-1.2 1.9"/><circle cx="12" cy="16.8" r="0.5" fill="currentColor"/></svg><span class="help-pop">${esc(DESC[s.slug] || 'One monitored part of the BookingPilot platform.')}</span></span></span>
+        ${s.time > 0 ? `<span class="ms">${fmtMs(s.time)}</span>` : ''}
+        <span class="check ${cls}">${cls === 'up' ? CHECK : cls === 'down' ? CROSS : WARN}</span>
+      </div>
+      <div class="bars">${bars}</div>
+      <div class="axis">
+        <span>90 days ago</span><i class="ln"></i>
+        <b>${upPct !== null ? upPct.toFixed(2) + '% uptime' : '— uptime'}</b>
+        <i class="ln"></i><span>Today</span>
+      </div>
+      <div class="state-line ${cls === 'up' ? '' : cls === 'down' ? 'bad' : ''}">${stateText}</div>
+      <div class="daytip"></div>
+    </div>`;
+  }).join('');
+  wireDayTips();
+}
+
+/* GitHub-style hover: white popover pinned above the hovered day bar. */
+function wireDayTips() {
+  document.querySelectorAll('#components .comp').forEach(comp => {
+    const tip = comp.querySelector('.daytip');
+    const barsEl = comp.querySelector('.bars');
+    if (!tip || !barsEl) return;
+    barsEl.addEventListener('mousemove', (e) => {
+      const bar = e.target.closest('i');
+      if (!bar || !bar.dataset.d) { tip.style.display = 'none'; return; }
+      const m = bar.dataset.m;
+      let inner = `<div class="dt-date">${bar.dataset.d}</div>`;
+      if (m === undefined) {
+        inner += '<div class="dt-msg">No data for this day.</div>';
+      } else if (+m <= 0) {
+        inner += '<div class="dt-msg">No downtime recorded on this day.</div>';
+      } else {
+        const mm = +m, h = Math.floor(mm / 60), r = Math.round(mm % 60);
+        inner += `<div class="dt-row"><span>${bar.classList.contains('down') ? 'Major outage' : 'Degradation'}</span><b>${h} hrs ${r} mins</b></div>`;
+      }
+      tip.innerHTML = inner;
+      tip.style.display = 'block';
+      const br = bar.getBoundingClientRect(), cr = comp.getBoundingClientRect();
+      const cx = br.left - cr.left + br.width / 2;
+      let left = cx;
+      const half = tip.offsetWidth / 2;
+      if (left - half < 4) left = 4 + half;
+      if (left + half > cr.width - 4) left = cr.width - 4 - half;
+      tip.style.left = left + 'px';
+      tip.style.setProperty('--ax', (cx - left + tip.offsetWidth / 2) + 'px');
+      tip.style.top = (barsEl.offsetTop - tip.offsetHeight - 10) + 'px';
+    });
+    barsEl.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
+  });
+}
+
+async function loadSummary() {
+  const res = await fetch(SUMMARY_URL + '?t=' + Date.now(), { cache: 'no-store' });
+  if (!res.ok) throw new Error('summary ' + res.status);
+  SITES = await res.json();
+  const lm = res.headers.get('Last-Modified');
+  lastDataAt = lm ? new Date(lm).getTime() : Date.now();
+  $('updatedLine').textContent = lm
+    ? 'Data updated ' + ago(lm) + ' · monitored by BookingPilot'
+    : 'Monitored by BookingPilot';
+}
+
+/* Stale-data banner: if the monitor hasn't committed fresh data in >20 min
+   (expired PAT, disabled workflow, Action schedule slip), say so loudly —
+   silently rendering old green bars is worse than admitting uncertainty. */
+function updateStale() {
+  const el = $('stalebar');
+  const ageMin = lastDataAt ? (Date.now() - lastDataAt) / 60000 : 0;
+  if (lastDataAt && ageMin > 20) {
+    $('stalebarText').textContent = `Monitoring delayed — last successful check ${ago(lastDataAt)}; data may be stale`;
+    el.style.display = 'flex';
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+/* Optional maintenance banner: drop a docs/maintenance.json on the status
+   repo like {"active":true,"message":"...","until":"2026-10-10T00:00:00Z"} —
+   zero infra, auto-expires at `until`. Absent/inactive file = no banner. */
+async function fetchMaintenance() {
+  try {
+    const res = await fetch('maintenance.json?t=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) return;
+    const m = await res.json();
+    if (m && m.active && m.message && (!m.until || new Date(m.until) > new Date())) {
+      $('maintbarText').textContent = m.message + (m.until ? ` (until ${fmtDate(m.until)})` : '');
+      $('maintbar').style.display = 'flex';
+    }
+  } catch { /* optional file */ }
+}
+
+function renderIncidents(issues) {
+  // Hide incidents belonging to internal (non-displayed) components;
+  // generic incidents that match no component still show.
+  issues = issues.filter(i => {
+    const slug = issueSlug(i);
+    return !slug || slug in DISPLAY;
+  });
+  const open = issues.filter(i => i.state === 'open');
+  const closed = issues.filter(i => i.state === 'closed').slice(0, 15);
+  if (!open.length && !closed.length) {
+    $('incidents').innerHTML = '<div class="empty">No incidents on record.</div>'; return;
+  }
+  const card = (i, active) => `
+    <div class="incident ${active ? 'active' : ''}">
+      <span class="i-state pill ${active ? 'down' : 'up'}">${active ? 'Ongoing' : 'Resolved'}</span>
+      <div class="i-title">${esc(i.title.replace(/[🛑✅⚠️]|Resolved:/gu, '').trim())}</div>
+      <div class="i-meta">
+        ${active ? 'Opened ' + fmtDate(i.created_at) : fmtDate(i.created_at) + ' → resolved ' + fmtDate(i.closed_at)}
+        ${i.closed_at ? ' · ' + fmtMins(new Date(i.closed_at) - new Date(i.created_at)) : ''}
+      </div>
+    </div>`;
+  $('incidents').innerHTML = open.map(i => card(i, true)).join('') + closed.map(i => card(i, false)).join('');
+}
+
+async function fetchIssues() {
+  const res = await fetch(ISSUES_URL);
+  if (!res.ok) throw new Error('issues ' + res.status);
+  ISSUES = (await res.json()).filter(i => !i.pull_request);
+}
+
+/* Repo creation date marks when monitoring started: days before it show as
+   no-data instead of falsely reporting uptime. Cached for the session. */
+async function fetchRepoCreated() {
+  if (repoCreated) return;
+  try {
+    const hit = sessionStorage.getItem('repoCreated');
+    if (hit) { repoCreated = +hit; return; }
+  } catch { /* ignore */ }
+  const res = await fetch(`https://api.github.com/repos/${REPO}`);
+  if (res.ok) {
+    repoCreated = new Date((await res.json()).created_at).getTime();
+    try { sessionStorage.setItem('repoCreated', repoCreated); } catch { /* ignore */ }
+  }
+}
+
+async function refresh() {
+  try { await loadSummary(); } catch { SITES = []; }
+  try { await Promise.all([fetchIssues(), fetchRepoCreated(), fetchMaintenance()]); } catch { /* issues optional */ }
+  computeDayWindows();
+  renderStatusbar();
+  renderComponents();
+  renderIncidents(ISSUES);
+  updateStale();
+}
+
+refresh();
+setInterval(refresh, 5 * 60 * 1000);
+</script>
+</body>
+</html>

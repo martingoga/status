@@ -1,0 +1,300 @@
+/* BookingPilot brand theme for the Upptime status page.
+   Warm-stone neutrals + clay-orange accent from src/styles/index.css;
+   status colors (green/amber/red) stay semantic. Served as-is from the
+   Upptime repo's assets/ directory and wired via themeUrl in .upptimerc.yml.
+
+   Selector note: Upptime loads global.css AFTER this file, so overrides
+   below are scoped under `html body` / `#sapper` to win on specificity
+   without !important (Upptime's own rules use `!important` for the status
+   border colors: those are kept). */
+
+/* ---------- Brand font (self-hosted, OFL-1.1: same files the app bundles) ---------- */
+@font-face {
+  font-family: 'Host Grotesk';
+  src: url('fonts/host-grotesk-latin-400-normal.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Host Grotesk';
+  src: url('fonts/host-grotesk-latin-500-normal.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Host Grotesk';
+  src: url('fonts/host-grotesk-latin-600-normal.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Host Grotesk';
+  src: url('fonts/host-grotesk-latin-700-normal.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ---------- Upptime theme variables ---------- */
+:root {
+  --body-background-color: #FBFBF9;
+  --body-text-color: #1C1917;
+  --card-background-color: #ffffff;
+  --nav-background-color: #ffffff;
+  --nav-border-bottom-color: #E7E5E4;
+  --nav-current-border-bottom-color: #FA4616;
+  --card-border-color: #E7E5E4;
+  --down-border-left-color: #F33535;
+  --down-background-color: #FEF2F2;
+  --degraded-border-left-color: #F59E0B;
+  --up-border-left-color: #16A34A;
+  --tag-color: #ffffff;
+  --tag-up-background-color: #16A34A;
+  --tag-down-background-color: #F33535;
+  --tag-degraded-background-color: #F59E0B;
+  --change-background-color: #FA4616;
+  --error-button-border-color: #E03F13;
+  --error-button-background-color: #FA4616;
+  --error-button-color: #ffffff;
+  --submit-button-border-color: #E03F13;
+  --submit-button-background-color: #FA4616;
+  --submit-button-color: #ffffff;
+  --graph-opacity: 1;
+  --graph-filter: none;
+}
+
+/* ---------- Typography ---------- */
+html body {
+  font-family: 'Host Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Hero: compact, tight-tracked, espresso */
+#sapper header {
+  padding: 1.5rem 0 0.25rem;
+}
+#sapper h1 {
+  font-size: 1.65rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  margin-bottom: 0.45rem;
+}
+#sapper p.lead {
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: #57534E;
+  max-width: 560px;
+}
+
+/* Section titles: BookingPilot page-title weight */
+#sapper h2 {
+  font-size: 1.02rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+#sapper section + h2 {
+  margin-top: 1.4rem;
+}
+
+/* Incident card titles + uptime data */
+#sapper h4 {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+#sapper .data {
+  font-weight: 600;
+}
+
+/* Date group headings: small uppercase label, BookingPilot caption style */
+#sapper h3 {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #78716C;
+  opacity: 1;
+}
+
+/* ---------- Layout ---------- */
+#sapper .container {
+  max-width: 840px;
+  padding: 0 1.25rem;
+}
+#sapper section {
+  margin-bottom: 1.25rem;
+}
+
+/* ---------- Status cards ---------- */
+#sapper article {
+  border-radius: 16px;
+  padding: 18px 22px;
+  border: 1px solid #E7E5E4;
+  color: #44403C;
+  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.04);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+#sapper article .data {
+  color: #1C1917;
+}
+/* Kill the thick colored left ribbon: Upptime sets it with !important,
+   so neutralizing it needs the same. Status is shown by the pill tag. */
+#sapper article.up,
+#sapper article.down,
+#sapper article.degraded {
+  border-left-color: #E7E5E4 !important;
+}
+/* Down/degraded cards get a tinted border to match their status fill
+   instead of the harsh red edge. */
+#sapper article.down {
+  border-color: #FECACA !important;
+}
+#sapper article.degraded {
+  border-color: #FDE68A !important;
+}
+#sapper article.link:hover {
+  box-shadow: 0 4px 14px rgba(28, 25, 23, 0.08);
+  transform: translateY(-1px);
+}
+#sapper article + article {
+  margin-top: 12px;
+}
+
+/* ---------- Status pills ---------- */
+#sapper .tag {
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 66%;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 0.28rem 0.7rem;
+  vertical-align: middle;
+}
+
+/* ---------- Nav: clean app topbar ---------- */
+#sapper nav {
+  font-weight: 500;
+  padding: 0 1.25rem;
+  margin-bottom: 0.5rem;
+}
+#sapper nav a {
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
+}
+#sapper nav img {
+  height: 24px;
+  width: auto;
+}
+#sapper nav a {
+  transition: color 0.12s ease;
+}
+#sapper nav a:hover {
+  color: #FA4616;
+}
+#sapper [aria-current] {
+  font-weight: 600;
+  border-bottom-width: 2px;
+}
+
+/* ---------- Duration filter: chip row inside a hairline section header ---------- */
+/* The Live Status section becomes a header band: title left, chips right,
+   continuous bottom hairline (h2 stretches to meet the form so the two
+   borders read as one line). Cards drop to full width underneath. */
+#sapper .live-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  justify-content: space-between;
+}
+#sapper .live-status h2 {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #E7E5E4;
+  padding-bottom: 0.7rem;
+  margin: 0 0 1.15rem;
+}
+#sapper .live-status form {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid #E7E5E4;
+  padding-bottom: 0.7rem;
+  margin: 0 0 1.15rem;
+}
+#sapper .live-status article,
+#sapper .live-status > div:not(form) {
+  flex: 0 0 100%;
+  box-sizing: border-box;
+}
+
+#sapper form input[type='radio'] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+}
+#sapper form label {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #57534E;
+  background: #F4F2EF;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 0.3rem 0.8rem;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+#sapper form label:hover {
+  background: #ECE9E6;
+}
+#sapper form input[type='radio']:checked + label {
+  background: #FA4616;
+  border-color: #FA4616;
+  color: #ffffff;
+}
+
+/* ---------- Links ---------- */
+#sapper a {
+  text-decoration: none;
+}
+/* Site names stay espresso: the whole card is a link, it should read as
+   a title, not a hyperlink. */
+#sapper h4 a {
+  color: #1C1917;
+  font-weight: 600;
+}
+#sapper h4 a:hover {
+  color: #FA4616;
+}
+/* Inline action links (incident report etc.) keep the accent. */
+#sapper .f.r a,
+#sapper section > p a,
+#sapper section > div a {
+  color: #FA4616;
+  font-weight: 500;
+}
+
+/* ---------- Buttons ---------- */
+#sapper .submit-button,
+#sapper a.error-button {
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+/* ---------- Footer ---------- */
+#sapper footer {
+  color: #78716C;
+  font-size: 0.85rem;
+}
+#sapper footer a {
+  color: #78716C;
+}
+#sapper footer a:hover {
+  color: #FA4616;
+}
