@@ -43,7 +43,7 @@
   --body-background-color: #FBFBF9;
   --body-text-color: #1C1917;
   --card-background-color: #ffffff;
-  --nav-background-color: #FAF9F6;
+  --nav-background-color: #ffffff;
   --nav-border-bottom-color: #E7E5E4;
   --nav-current-border-bottom-color: #FA4616;
   --card-border-color: #E7E5E4;
@@ -73,56 +73,90 @@ html body {
   text-rendering: optimizeLegibility;
 }
 
+/* Hero — big, tight-tracked, espresso */
+#sapper header {
+  padding: 2.5rem 0 0.5rem;
+}
 #sapper h1 {
+  font-size: 2rem;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
+  margin-bottom: 0.6rem;
+}
+#sapper p.lead {
+  font-size: 1.02rem;
+  line-height: 1.6;
+  color: #57534E;
+  max-width: 560px;
 }
 
+/* Section titles — BookingPilot page-title weight */
 #sapper h2 {
+  font-size: 1.05rem;
   font-weight: 600;
   letter-spacing: -0.01em;
 }
 
+/* Incident card titles + uptime data */
 #sapper h4 {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+#sapper .data {
   font-weight: 600;
 }
 
-#sapper p.lead {
-  color: #44403C;
+/* Date group headings — small uppercase label, BookingPilot caption style */
+#sapper h3 {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #78716C;
+  opacity: 1;
 }
 
-/* ---------- Layout / cards ---------- */
+/* ---------- Layout ---------- */
 #sapper .container {
   max-width: 840px;
+  padding: 0 1.25rem;
+}
+#sapper section {
+  margin-bottom: 1.25rem;
 }
 
-/* Status cards — BookingPilot's soft stone-bordered surfaces */
+/* ---------- Status cards ---------- */
 #sapper article {
-  border-radius: 14px;
-  padding: 16px 20px;
+  border-radius: 16px;
+  padding: 18px 22px;
   border: 1px solid #E7E5E4;
   border-left-width: 4px;
-  transition: box-shadow 0.15s ease;
+  box-shadow: 0 1px 2px rgba(28, 25, 23, 0.04);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
 }
 #sapper article.link:hover {
-  box-shadow: 0 2px 8px rgba(28, 25, 23, 0.07);
+  box-shadow: 0 4px 14px rgba(28, 25, 23, 0.08);
+  transform: translateY(-1px);
 }
 #sapper article + article {
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
-/* Status pills — rounded, semibold */
+/* ---------- Status pills ---------- */
 #sapper .tag {
   border-radius: 999px;
   font-weight: 600;
-  font-size: 68%;
-  padding: 0.3rem 0.65rem;
-  letter-spacing: 0.02em;
+  font-size: 66%;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 0.28rem 0.7rem;
+  vertical-align: middle;
 }
 
-/* ---------- Nav ---------- */
+/* ---------- Nav — clean app topbar ---------- */
 #sapper nav {
   font-weight: 500;
+  padding: 0 1.25rem;
 }
 #sapper nav a {
   transition: color 0.12s ease;
@@ -132,16 +166,59 @@ html body {
 }
 #sapper [aria-current] {
   font-weight: 600;
+  border-bottom-width: 2px;
 }
 
-/* ---------- Duration filter (day/week/month radios) ---------- */
-#sapper label {
+/* ---------- Duration filter → chips ---------- */
+#sapper form input[type='radio'] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+}
+#sapper form label {
+  display: inline-block;
+  font-size: 0.82rem;
   font-weight: 500;
+  color: #57534E;
+  background: #F4F2EF;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+#sapper form label:hover {
+  background: #ECE9E6;
+}
+#sapper form input[type='radio']:checked + label {
+  background: #FA4616;
+  border-color: #FA4616;
+  color: #ffffff;
+}
+
+/* ---------- Links ---------- */
+#sapper a {
+  text-decoration: none;
+}
+#sapper article a,
+#sapper section a {
+  color: #FA4616;
+  font-weight: 500;
+}
+
+/* ---------- Buttons ---------- */
+#sapper .submit-button,
+#sapper a.error-button {
+  border-radius: 10px;
+  font-weight: 600;
 }
 
 /* ---------- Footer ---------- */
 #sapper footer {
   color: #78716C;
+  font-size: 0.85rem;
 }
 #sapper footer a {
   color: #78716C;
