@@ -6,9 +6,9 @@
    Selector note: Upptime loads global.css AFTER this file, so overrides
    below are scoped under `html body` / `#sapper` to win on specificity
    without !important (Upptime's own rules use `!important` for the status
-   border colors — those are kept). */
+   border colors: those are kept). */
 
-/* ---------- Brand font (self-hosted, OFL-1.1 — same files the app bundles) ---------- */
+/* ---------- Brand font (self-hosted, OFL-1.1: same files the app bundles) ---------- */
 @font-face {
   font-family: 'Host Grotesk';
   src: url('fonts/host-grotesk-latin-400-normal.woff2') format('woff2');
@@ -73,7 +73,7 @@ html body {
   text-rendering: optimizeLegibility;
 }
 
-/* Hero — big, tight-tracked, espresso */
+/* Hero: big, tight-tracked, espresso */
 #sapper header {
   padding: 2.5rem 0 0.5rem;
 }
@@ -90,7 +90,7 @@ html body {
   max-width: 560px;
 }
 
-/* Section titles — BookingPilot page-title weight */
+/* Section titles: BookingPilot page-title weight */
 #sapper h2 {
   font-size: 1.05rem;
   font-weight: 600;
@@ -106,7 +106,7 @@ html body {
   font-weight: 600;
 }
 
-/* Date group headings — small uppercase label, BookingPilot caption style */
+/* Date group headings: small uppercase label, BookingPilot caption style */
 #sapper h3 {
   font-size: 0.72rem;
   font-weight: 600;
@@ -130,9 +130,15 @@ html body {
   border-radius: 16px;
   padding: 18px 22px;
   border: 1px solid #E7E5E4;
-  border-left-width: 4px;
   box-shadow: 0 1px 2px rgba(28, 25, 23, 0.04);
   transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+/* Kill the thick colored left ribbon: Upptime sets it with !important,
+   so neutralizing it needs the same. Status is shown by the pill tag. */
+#sapper article.up,
+#sapper article.down,
+#sapper article.degraded {
+  border-left-color: #E7E5E4 !important;
 }
 #sapper article.link:hover {
   box-shadow: 0 4px 14px rgba(28, 25, 23, 0.08);
@@ -153,7 +159,7 @@ html body {
   vertical-align: middle;
 }
 
-/* ---------- Nav — clean app topbar ---------- */
+/* ---------- Nav: clean app topbar ---------- */
 #sapper nav {
   font-weight: 500;
   padding: 0 1.25rem;
@@ -202,8 +208,19 @@ html body {
 #sapper a {
   text-decoration: none;
 }
-#sapper article a,
-#sapper section a {
+/* Site names stay espresso: the whole card is a link, it should read as
+   a title, not a hyperlink. */
+#sapper h4 a {
+  color: #1C1917;
+  font-weight: 600;
+}
+#sapper h4 a:hover {
+  color: #FA4616;
+}
+/* Inline action links (incident report etc.) keep the accent. */
+#sapper .f.r a,
+#sapper section > p a,
+#sapper section > div a {
   color: #FA4616;
   font-weight: 500;
 }
