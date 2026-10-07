@@ -133,8 +133,12 @@ html body {
   border-radius: 16px;
   padding: 18px 22px;
   border: 1px solid #E7E5E4;
+  color: #44403C;
   box-shadow: 0 1px 2px rgba(28, 25, 23, 0.04);
   transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+#sapper article .data {
+  color: #1C1917;
 }
 /* Kill the thick colored left ribbon: Upptime sets it with !important,
    so neutralizing it needs the same. Status is shown by the pill tag. */
@@ -142,6 +146,14 @@ html body {
 #sapper article.down,
 #sapper article.degraded {
   border-left-color: #E7E5E4 !important;
+}
+/* Down/degraded cards get a tinted border to match their status fill
+   instead of the harsh red edge. */
+#sapper article.down {
+  border-color: #FECACA !important;
+}
+#sapper article.degraded {
+  border-color: #FDE68A !important;
 }
 #sapper article.link:hover {
   box-shadow: 0 4px 14px rgba(28, 25, 23, 0.08);
@@ -187,30 +199,36 @@ html body {
   border-bottom-width: 2px;
 }
 
-/* ---------- Duration filter: compact chip row on the section header ---------- */
-/* The Live Status section becomes a header row: title left, chips right.
-   Cards (and any other children) drop to full width underneath. */
+/* ---------- Duration filter: chip row inside a hairline section header ---------- */
+/* The Live Status section becomes a header band: title left, chips right,
+   continuous bottom hairline (h2 stretches to meet the form so the two
+   borders read as one line). Cards drop to full width underneath. */
 #sapper .live-status {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: stretch;
   justify-content: space-between;
 }
 #sapper .live-status h2 {
-  margin: 0 0 0.9rem;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #E7E5E4;
+  padding-bottom: 0.7rem;
+  margin: 0 0 1.15rem;
 }
-#sapper .live-status > *:not(h2) {
-  flex-shrink: 0;
+#sapper .live-status form {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid #E7E5E4;
+  padding-bottom: 0.7rem;
+  margin: 0 0 1.15rem;
 }
 #sapper .live-status article,
 #sapper .live-status > div:not(form) {
   flex: 0 0 100%;
   box-sizing: border-box;
-}
-#sapper .live-status form {
-  display: inline-flex;
-  gap: 8px;
-  margin-bottom: 0.9rem;
 }
 
 #sapper form input[type='radio'] {
