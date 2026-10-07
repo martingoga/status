@@ -1,0 +1,37 @@
+/* BookingPilot brand theme for the Upptime status page.
+   Warm-stone neutrals + clay-orange accent from src/styles/index.css;
+   status colors (green/amber/red) stay semantic. Served as-is from the
+   Upptime repo's assets/ directory and wired via themeUrl in .upptimerc.yml. */
+
+:root {
+  --body-background-color: #FBFBF9;
+  --body-text-color: #1C1917;
+  --card-background-color: #ffffff;
+  --nav-background-color: #ffffff;
+  --nav-border-bottom-color: #E7E5E4;
+  --nav-current-border-bottom-color: #FA4616;
+  --card-border-color: #E7E5E4;
+  --down-border-left-color: #F33535;
+  --down-background-color: #FEF2F2;
+  --degraded-border-left-color: #F59E0B;
+  --up-border-left-color: #16A34A;
+  --tag-color: #ffffff;
+  --tag-up-background-color: #16A34A;
+  --tag-down-background-color: #F33535;
+  --tag-degraded-background-color: #F59E0B;
+  --change-background-color: #FA4616;
+  --error-button-border-color: #E03F13;
+  --error-button-background-color: #FA4616;
+  --error-button-color: #ffffff;
+  --submit-button-border-color: #E03F13;
+  --submit-button-background-color: #FA4616;
+  --submit-button-color: #ffffff;
+  --graph-opacity: 1;
+  --graph-filter: none;
+}
+
+/* Host Grotesk isn't hosted publicly; falls back to the platform stack
+   (which is very close) for anyone without it installed. */
+body {
+  font-family: 'Host Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
