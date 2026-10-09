@@ -1,7 +1,7 @@
 url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=edge
 status: up
 code: 200
-responseTime: 515
-lastUpdated: 2026-10-08T02:23:39.468Z
+responseTime: 500
+lastUpdated: 2026-10-09T02:41:20.394Z
 startTime: 2026-10-07T19:31:04.341Z
 generator: Upptime <https://github.com/upptime/upptime>
