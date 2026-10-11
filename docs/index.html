@@ -246,13 +246,25 @@
 
   /* ---------- Incidents ---------- */
   .incident {
-    border: 1px solid var(--border); border-radius: 16px; background: var(--card);
-    padding: 14px 18px; margin-bottom: 10px;
+    display: flex; gap: 14px; align-items: flex-start;
+    border: 1px solid var(--border); border-radius: 14px; background: var(--card);
+    padding: 15px 18px; margin-bottom: 10px;
   }
   .incident.active { border-color: var(--red-border); background: var(--red-bg); }
-  .incident .i-title { font-weight: 600; font-size: 0.92rem; }
-  .incident .i-meta { font-size: 0.82rem; color: var(--text-3); margin-top: 3px; }
-  .incident .i-state { float: right; }
+  .incident .i-icon {
+    width: 30px; height: 30px; border-radius: 9px; flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .incident .i-icon svg { width: 15px; height: 15px; }
+  .incident.active .i-icon { background: #fff; color: var(--red); border: 1px solid var(--red-border); }
+  .incident:not(.active) .i-icon { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+  .incident .i-body { flex: 1; min-width: 0; }
+  .incident .i-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .incident .i-title { font-weight: 600; font-size: 0.94rem; color: var(--text); }
+  .incident .i-title a { color: inherit; }
+  .incident .i-title a:hover { color: var(--accent); }
+  .incident .i-meta { font-size: 0.82rem; color: var(--text-3); margin-top: 4px; }
+  .incident .i-state { flex-shrink: 0; }
   .empty { color: var(--text-3); font-size: 0.9rem; padding: 8px 0 4px; }
 
   /* ---------- Footer ---------- */
@@ -286,8 +298,8 @@
     .cur-head h2 { font-size: 1.15rem; }
     .bars { height: 30px; }
     .comp .axis { font-size: 0.7rem; gap: 8px; }
-    .incident { padding: 12px 14px; }
-    .incident .i-state { float: none; display: inline-block; margin-bottom: 6px; }
+    .incident { padding: 12px 14px; gap: 10px; }
+    .incident .i-icon { width: 26px; height: 26px; border-radius: 8px; }
     footer { flex-direction: column; gap: 8px; align-items: flex-start; }
     .help-pop { width: 240px; }
   }
@@ -361,7 +373,9 @@ const fmtMins = (ms) => {
   const m = Math.round(ms / 60000);
   if (m < 60) return m + 'm';
   const h = Math.floor(m / 60);
-  return h + 'h ' + (m % 60) + 'm';
+  if (h < 24) return h + 'h ' + (m % 60) + 'm';
+  const d = Math.floor(h / 24);
+  return (h % 24) ? d + 'd ' + (h % 24) + 'h' : d + 'd';
 };
 const fmtMs = (ms) => ms >= 1000 ? (ms / 1000).toFixed(1) + 's' : Math.round(ms) + 'ms';
 const ago = (d) => {
@@ -685,15 +699,26 @@ function renderIncidents(issues) {
   if (!open.length && !closed.length) {
     $('incidents').innerHTML = '<div class="empty">No incidents on record.</div>'; return;
   }
-  const card = (i, active) => `
+  const card = (i, active) => {
+    const title = esc(i.title.replace(/[🛑✅⚠️]|Resolved:/gu, '').trim());
+    const duration = i.closed_at
+      ? fmtMins(new Date(i.closed_at) - new Date(i.created_at))
+      : fmtMins(Date.now() - new Date(i.created_at)) + ' so far';
+    const meta = active
+      ? `Opened ${fmtDate(i.created_at)} · ${duration}`
+      : `${fmtDate(i.created_at)} → resolved ${fmtDate(i.closed_at)} · ${duration}`;
+    return `
     <div class="incident ${active ? 'active' : ''}">
-      <span class="i-state pill ${active ? 'down' : 'up'}">${active ? 'Ongoing' : 'Resolved'}</span>
-      <div class="i-title">${esc(i.title.replace(/[🛑✅⚠️]|Resolved:/gu, '').trim())}</div>
-      <div class="i-meta">
-        ${active ? 'Opened ' + fmtDate(i.created_at) : fmtDate(i.created_at) + ' → resolved ' + fmtDate(i.closed_at)}
-        ${i.closed_at ? ' · ' + fmtMins(new Date(i.closed_at) - new Date(i.created_at)) : ''}
+      <span class="i-icon">${active ? WARN : CHECK}</span>
+      <div class="i-body">
+        <div class="i-top">
+          <span class="i-title"><a href="${esc(i.html_url)}" target="_blank" rel="noopener noreferrer">${title}</a></span>
+          <span class="i-state pill ${active ? 'down' : 'up'}">${active ? 'Ongoing' : 'Resolved'}</span>
+        </div>
+        <div class="i-meta">${meta}</div>
       </div>
     </div>`;
+  };
   $('incidents').innerHTML = open.map(i => card(i, true)).join('') + closed.map(i => card(i, false)).join('');
 }
 
