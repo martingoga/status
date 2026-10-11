@@ -28,7 +28,23 @@
     --red: #DC2626;   --red-bg: #FEF2F2;   --red-border: #FECACA;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  /* Page transitions: native cross-document view transitions where supported,
+     manual fade fallback elsewhere. */
+  @view-transition { navigation: auto; }
+  @keyframes pageIn { from { opacity: 0; transform: translateY(6px); } }
+  @keyframes pageOut { to { opacity: 0; transform: translateY(-8px); } }
+  ::view-transition-old(root) { animation: pageOut .26s cubic-bezier(.4,0,.2,1) both; }
+  ::view-transition-new(root) { animation: pageIn .32s cubic-bezier(.16,1,.3,1) both .04s; }
+  ::view-transition-old(root), ::view-transition-new(root) { mix-blend-mode: normal; }
+  @supports not (view-transition-name: none) {
+    body { animation: pageIn .22s cubic-bezier(.16,1,.3,1) both; }
+  }
+  body.leaving {
+    animation: none;
+    opacity: 0; transform: translateY(-4px);
+    transition: opacity .16s ease, transform .16s ease;
+  }
+  html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; scrollbar-gutter: stable; }
   body {
     font-family: 'Host Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: var(--bg);
@@ -69,17 +85,28 @@
   /* ---------- Overall status bar (solid, statuspage-style) ---------- */
   .statusbar {
     margin: 24px 0 8px;
-    border-radius: 12px;
+    border-radius: 14px;
     padding: 14px 18px;
-    display: flex; align-items: center; gap: 10px;
-    color: #fff; font-weight: 600; font-size: 0.95rem; letter-spacing: -0.005em;
+    display: flex; align-items: center; gap: 14px;
+    background: var(--card); border: 1px solid var(--border);
+    box-shadow: 0 1px 2px rgba(28,25,23,.03);
+    color: var(--text);
   }
-  .statusbar svg { width: 18px; height: 18px; flex-shrink: 0; }
-  .statusbar .sub { font-weight: 400; font-size: 0.82rem; opacity: .85; margin-left: auto; }
-  .statusbar.ok { background: var(--green); }
-  .statusbar.warn { background: var(--amber); }
-  .statusbar.down { background: var(--red); }
-  .statusbar.unknown { background: var(--text-3); }
+  .statusbar .sb-icon {
+    width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .statusbar .sb-icon svg { width: 19px; height: 19px; }
+  .statusbar .sb-text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+  .statusbar .sb-title { font-weight: 600; font-size: 1.02rem; letter-spacing: -0.005em; }
+  .statusbar .sub { font-weight: 500; font-size: 0.82rem; color: var(--text-3); margin-left: auto; white-space: nowrap; }
+  .statusbar.ok .sb-icon { background: var(--green-bg); color: var(--green); }
+  .statusbar.ok .sb-title { color: var(--green); }
+  .statusbar.warn .sb-icon { background: var(--amber-bg); color: var(--amber); }
+  .statusbar.warn .sb-title { color: var(--amber); }
+  .statusbar.down .sb-icon { background: var(--red-bg); color: var(--red); }
+  .statusbar.down .sb-title { color: var(--red); }
+  .statusbar.unknown .sb-icon { background: var(--sand); color: var(--text-3); }
 
   /* ---------- Slim banners (stale monitor data / scheduled maintenance) ---------- */
   .slimbar {
@@ -109,7 +136,7 @@
   .section-head h2 { font-size: 0.98rem; font-weight: 600; letter-spacing: -0.01em; }
 
   .pill {
-    font-size: 0.68rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+    font-size: 0.72rem; font-weight: 600; letter-spacing: .01em;
     border-radius: 999px; padding: 3px 10px; white-space: nowrap;
   }
   .pill.up { background: var(--green-bg); color: var(--green); }
@@ -157,7 +184,7 @@
     position: absolute; display: none; z-index: 20;
     background: #fff; border: 1px solid var(--border); border-radius: 10px;
     box-shadow: 0 8px 24px rgba(28,25,23,.10), 0 2px 6px rgba(28,25,23,.06);
-    padding: 12px 16px; min-width: 210px; pointer-events: none;
+    padding: 12px 16px; min-width: 230px; max-width: 280px;
     transform: translateX(-50%);
   }
   .daytip::after {
@@ -169,11 +196,22 @@
   .daytip .dt-date { font-weight: 600; font-size: 0.92rem; margin-bottom: 6px; }
   .daytip .dt-msg { font-size: 0.84rem; color: var(--text-2); }
   .daytip .dt-row {
-    display: flex; justify-content: space-between; gap: 18px;
+    display: flex; justify-content: space-between; align-items: center; gap: 18px;
     background: var(--sand); border-radius: 6px; padding: 7px 12px;
     font-size: 0.84rem;
   }
-  .daytip .dt-row b { font-weight: 600; }
+  .daytip .dt-row span { white-space: nowrap; }
+  .daytip .dt-row b { font-weight: 600; white-space: nowrap; }
+  .daytip .dt-rel-label {
+    font-size: 0.68rem; font-weight: 600; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--text-3); margin: 12px 0 4px;
+  }
+  .daytip .dt-rel a {
+    display: block;
+    font-size: 0.82rem; font-weight: 500; line-height: 1.45;
+    color: var(--text-2); padding: 2px 0;
+  }
+  .daytip .dt-rel a:hover { color: var(--text); text-decoration: underline; }
 
   .comp .axis {
     display: flex; justify-content: space-between; align-items: center;
@@ -229,9 +267,29 @@
 
   .updated { font-size: 0.8rem; color: var(--text-3); }
 
+  /* ---------- Mobile ---------- */
+  @media (max-width: 700px) {
+    .wrap { padding: 0 16px; }
+    .comp { padding: 16px; }
+  }
   @media (max-width: 560px) {
-    .statusbar { padding: 12px 14px; }
+    .topbar .wrap { gap: 8px; height: 56px; }
+    .topbar .page-sub { display: none; }
+    .topbar .page-title { font-size: 16px; }
+    .btn-sand { height: 32px; padding: 0 10px; font-size: 12px; }
+    .statusbar { padding: 13px 14px; gap: 12px; }
+    .statusbar .sb-icon { width: 32px; height: 32px; }
+    .statusbar .sb-title { font-size: 0.95rem; }
+    .statusbar .sub { font-size: 0.78rem; }
     .section-head { flex-wrap: wrap; gap: 10px; }
+    .cur-head { margin: 26px 0 16px; }
+    .cur-head h2 { font-size: 1.15rem; }
+    .bars { height: 30px; }
+    .comp .axis { font-size: 0.7rem; gap: 8px; }
+    .incident { padding: 12px 14px; }
+    .incident .i-state { float: none; display: inline-block; margin-bottom: 6px; }
+    footer { flex-direction: column; gap: 8px; align-items: flex-start; }
+    .help-pop { width: 240px; }
   }
 </style>
 </head>
@@ -253,8 +311,10 @@
 <div class="wrap">
 
   <div class="statusbar unknown" id="statusbar">
-    <svg id="statusbarIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><circle cx="12" cy="16" r="0.5" fill="currentColor"/></svg>
-    <span id="statusbarText">Checking status…</span>
+    <span class="sb-icon"><svg id="statusbarIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><circle cx="12" cy="16" r="0.5" fill="currentColor"/></svg></span>
+    <div class="sb-text">
+      <span class="sb-title" id="statusbarText">Checking status…</span>
+    </div>
     <span class="sub" id="statusbarSub"></span>
   </div>
 
@@ -269,16 +329,15 @@
 
   <div class="cur-head">
     <h2>Current Status: <span style="font-weight:400">BookingPilot</span></h2>
-    <span class="note">Uptime over the past 90 days. <a href="#incidents">View historical uptime.</a></span>
+    <span class="note">Uptime over the past 90 days. <a href="history.html#uptime">View historical uptime.</a></span>
   </div>
   <div class="comp-grid" id="components"></div>
 
-  <div class="section-head"><h2>Incidents</h2></div>
+  <div class="section-head"><h2>Incidents</h2><a href="history.html#incidents" style="font-size:0.84rem">View incident history</a></div>
   <div id="incidents"><div class="empty">Loading…</div></div>
 
   <footer>
     <span id="updatedLine">Monitored by BookingPilot</span>
-    <a href="https://github.com/martingoga/status/issues">Report an issue</a>
   </footer>
 </div>
 
@@ -454,12 +513,15 @@ function renderComponents() {
     const bars = mins.map((m, d) => {
       const ds = dayStart(now - (DAYS - 1 - d) * dayMs);
       const date = fmtDay(ds);
-      if (repoCreated && ds + dayMs < repoCreated) return `<i class="nodata" data-d="${date}"></i>`;
-      if (d === DAYS - 1 && cls === 'down') return `<i class="down" data-d="${date}" data-m="${Math.round(m)}"></i>`;
-      if (d === DAYS - 1 && cls !== 'up') return `<i class="partial" data-d="${date}" data-m="${Math.round(m)}"></i>`;
-      if (m >= 720) return `<i class="down" data-d="${date}" data-m="${Math.round(m)}"></i>`;
-      if (m > 0) return `<i class="partial" data-d="${date}" data-m="${Math.round(m)}"></i>`;
-      return `<i data-d="${date}" data-m="0"></i>`;
+      if (repoCreated && ds + dayMs < repoCreated) return `<i class="nodata" data-d="${date}" data-t="${ds}"></i>`;
+      if (d === DAYS - 1 && cls === 'down') return `<i class="down" data-d="${date}" data-t="${ds}" data-m="${Math.round(m)}"></i>`;
+      if (d === DAYS - 1 && cls !== 'up') return `<i class="partial" data-d="${date}" data-t="${ds}" data-m="${Math.round(m)}"></i>`;
+      // Color by share of the monitored day: a day that was down for most of
+      // its monitored minutes is a major outage even under 720 raw minutes.
+      const monitored = (Math.min(ds + dayMs, now) - Math.max(ds, repoCreated || 0)) / 60000;
+      if (m > 0 && monitored > 0 && m / monitored >= 0.5) return `<i class="down" data-d="${date}" data-t="${ds}" data-m="${Math.round(m)}"></i>`;
+      if (m > 0) return `<i class="partial" data-d="${date}" data-t="${ds}" data-m="${Math.round(m)}"></i>`;
+      return `<i data-d="${date}" data-t="${ds}" data-m="0"></i>`;
     }).join('');
 
     // Denominator counts only minutes actually monitored: pre-repo days are
@@ -483,7 +545,7 @@ function renderComponents() {
       : (LABEL[cls] || 'Unknown');
 
     return `
-    <div class="comp">
+    <div class="comp" data-slug="${esc(s.slug)}">
       <div class="row">
         <span class="name">${esc(DISPLAY[s.slug] || s.name)}<span class="help" tabindex="0" role="button" aria-label="What is ${esc(s.name)}?"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.2"/><path d="M9.4 9.2a2.6 2.6 0 1 1 3.8 2.3c-.8.5-1.2.9-1.2 1.9"/><circle cx="12" cy="16.8" r="0.5" fill="currentColor"/></svg><span class="help-pop">${esc(DESC[s.slug] || 'One monitored part of the BookingPilot platform.')}</span></span></span>
         ${s.time > 0 ? `<span class="ms">${fmtMs(s.time)}</span>` : ''}
@@ -502,15 +564,35 @@ function renderComponents() {
   wireDayTips();
 }
 
-/* GitHub-style hover: white popover pinned above the hovered day bar. */
+/* Incidents overlapping a UTC day for a component. */
+function relatedIssues(slug, ds) {
+  const dayEnd = ds + dayMs, now = Date.now();
+  return ISSUES.filter(i => {
+    if (issueSlug(i) !== slug) return false;
+    const t0 = new Date(i.created_at).getTime();
+    const t1 = i.closed_at ? new Date(i.closed_at).getTime() : now;
+    return t0 < dayEnd && t1 > ds;
+  });
+}
+
+/* GitHub-style hover: white popover pinned above the hovered day bar.
+   Stays open while hovered (Related links are clickable); tap on mobile. */
 function wireDayTips() {
   document.querySelectorAll('#components .comp').forEach(comp => {
     const tip = comp.querySelector('.daytip');
     const barsEl = comp.querySelector('.bars');
     if (!tip || !barsEl) return;
-    barsEl.addEventListener('mousemove', (e) => {
-      const bar = e.target.closest('i');
-      if (!bar || !bar.dataset.d) { tip.style.display = 'none'; return; }
+    const slug = comp.dataset.slug;
+    let hideTimer = null;
+    const hide = () => { tip.style.display = 'none'; };
+    const hideSoon = () => { clearTimeout(hideTimer); hideTimer = setTimeout(hide, 250); };
+    const stayOpen = () => clearTimeout(hideTimer);
+    tip.addEventListener('mouseenter', stayOpen);
+    tip.addEventListener('mouseleave', hide);
+    const showFor = (bar) => {
+      if (!bar) return; // gaps between bars keep the current tip
+      if (!bar.dataset.d) { hideSoon(); return; }
+      stayOpen();
       const m = bar.dataset.m;
       let inner = `<div class="dt-date">${bar.dataset.d}</div>`;
       if (m === undefined) {
@@ -520,6 +602,15 @@ function wireDayTips() {
       } else {
         const mm = +m, h = Math.floor(mm / 60), r = Math.round(mm % 60);
         inner += `<div class="dt-row"><span>${bar.classList.contains('down') ? 'Major outage' : 'Degradation'}</span><b>${h} hrs ${r} mins</b></div>`;
+      }
+      const rel = relatedIssues(slug, +bar.dataset.t);
+      if (rel.length) {
+        inner += '<div class="dt-rel-label">Related</div><div class="dt-rel">'
+          + rel.map(i => {
+              const title = i.title.replace(/[🛑✅⚠️]|Resolved:/gu, '').trim();
+              return `<a href="${esc(i.html_url)}" target="_blank" rel="noopener">${esc(title)}</a>`;
+            }).join('')
+          + '</div>';
       }
       tip.innerHTML = inner;
       tip.style.display = 'block';
@@ -532,8 +623,13 @@ function wireDayTips() {
       tip.style.left = left + 'px';
       tip.style.setProperty('--ax', (cx - left + tip.offsetWidth / 2) + 'px');
       tip.style.top = (barsEl.offsetTop - tip.offsetHeight - 10) + 'px';
-    });
-    barsEl.addEventListener('mouseleave', () => { tip.style.display = 'none'; });
+    };
+    barsEl.addEventListener('mousemove', (e) => showFor(e.target.closest('i')));
+    barsEl.addEventListener('mouseleave', hideSoon);
+    barsEl.addEventListener('click', (e) => showFor(e.target.closest('i')));
+    document.addEventListener('touchstart', (e) => {
+      if (!comp.contains(e.target) && !tip.contains(e.target)) hide();
+    }, { passive: true });
   });
 }
 
@@ -585,7 +681,7 @@ function renderIncidents(issues) {
     return !slug || slug in DISPLAY;
   });
   const open = issues.filter(i => i.state === 'open');
-  const closed = issues.filter(i => i.state === 'closed').slice(0, 15);
+  const closed = issues.filter(i => i.state === 'closed').slice(0, 5);
   if (!open.length && !closed.length) {
     $('incidents').innerHTML = '<div class="empty">No incidents on record.</div>'; return;
   }
@@ -630,6 +726,21 @@ async function refresh() {
   renderComponents();
   renderIncidents(ISSUES);
   updateStale();
+}
+
+/* Smooth page-out toward the history page — only needed where
+   cross-document view transitions aren't supported. */
+if (!('startViewTransition' in document)) {
+  document.querySelectorAll('a[href^="history.html"]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.body.classList.add('leaving');
+      setTimeout(() => { location.href = a.href; }, 150);
+    });
+  });
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) document.body.classList.remove('leaving');
+  });
 }
 
 refresh();

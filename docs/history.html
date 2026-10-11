@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BookingPilot Status — History</title>
+<meta name="description" content="Incident and uptime history for the BookingPilot platform.">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<style>
+  @font-face { font-family: 'Host Grotesk'; src: url('fonts/host-grotesk-latin-400-normal.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+  @font-face { font-family: 'Host Grotesk'; src: url('fonts/host-grotesk-latin-500-normal.woff2') format('woff2'); font-weight: 500; font-display: swap; }
+  @font-face { font-family: 'Host Grotesk'; src: url('fonts/host-grotesk-latin-600-normal.woff2') format('woff2'); font-weight: 600; font-display: swap; }
+  @font-face { font-family: 'Host Grotesk'; src: url('fonts/host-grotesk-latin-700-normal.woff2') format('woff2'); font-weight: 700; font-display: swap; }
+
+  :root {
+    --bg: #FBFBF9;
+    --card: #ffffff;
+    --border: #E7E5E4;
+    --text: #1C1917;
+    --text-2: #44403C;
+    --text-3: #78716C;
+    --accent: #FA4616;
+    --accent-hover: #E03F13;
+    --sand: #F4F2EF;
+    --sand-hover: #ECE9E6;
+    --green: #16A34A; --green-bg: #F0FDF4;
+    --amber: #D97706; --amber-bg: #FFFBEB;
+    --red: #DC2626;   --red-bg: #FEF2F2;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  /* Page transitions: native cross-document view transitions where supported,
+     manual fade fallback elsewhere. */
+  @view-transition { navigation: auto; }
+  @keyframes pageIn { from { opacity: 0; transform: translateY(6px); } }
+  @keyframes pageOut { to { opacity: 0; transform: translateY(-8px); } }
+  ::view-transition-old(root) { animation: pageOut .26s cubic-bezier(.4,0,.2,1) both; }
+  ::view-transition-new(root) { animation: pageIn .32s cubic-bezier(.16,1,.3,1) both .04s; }
+  ::view-transition-old(root), ::view-transition-new(root) { mix-blend-mode: normal; }
+  @supports not (view-transition-name: none) {
+    body { animation: pageIn .22s cubic-bezier(.16,1,.3,1) both; }
+  }
+  body.leaving {
+    animation: none;
+    opacity: 0; transform: translateY(-4px);
+    transition: opacity .16s ease, transform .16s ease;
+  }
+  html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; scrollbar-gutter: stable; }
+  body {
+    font-family: 'Host Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    font-size: 15px;
+  }
+  a { color: var(--accent); text-decoration: none; font-weight: 500; }
+  a:hover { color: var(--accent-hover); }
+
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 0 32px; }
+
+  /* ---------- Topbar (same as index) ---------- */
+  .topbar {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 10;
+  }
+  .topbar .wrap { display: flex; align-items: center; height: 64px; gap: 12px; }
+  .topbar img.logo { height: 26px; width: auto; }
+  .topbar .page-title {
+    font-size: 18px; line-height: 22px; font-weight: 600;
+    letter-spacing: -0.01em; color: var(--text);
+  }
+  .topbar .page-sub {
+    font-size: 12px; line-height: 16px; color: var(--text-3); font-weight: 300;
+  }
+  .topbar .title-stack { display: flex; flex-direction: column; }
+  .topbar .spacer { flex: 1; }
+  .btn-sand {
+    display: inline-flex; align-items: center; height: 36px; padding: 0 14px;
+    background: var(--sand); border-radius: 10px;
+    font-size: 13px; font-weight: 500; color: var(--text-2);
+    transition: background .12s ease;
+  }
+  .btn-sand:hover { background: var(--sand-hover); color: var(--text); }
+  .topbar .v-divider {
+    width: 1px; height: 18px; background: var(--border); flex-shrink: 0;
+  }
+
+  /* ---------- Toolbar: tabs + pager ---------- */
+  .toolbar {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; margin: 28px 0 26px; flex-wrap: wrap;
+  }
+  /* Segmented control — same spec as the app's AnimatedTabs pill bar */
+  .tabs {
+    display: inline-flex; gap: 4px; padding: 4px;
+    background: #FAF9F6; border: 1px solid var(--border); border-radius: 8px;
+  }
+  .tabs button {
+    appearance: none; border: none; background: transparent; cursor: pointer;
+    font: inherit; padding: 6px 14px; border-radius: 6px;
+    font-size: 12px; font-weight: 400; color: var(--text-3);
+    white-space: nowrap; position: relative;
+    transition: color .2s ease, background .2s ease;
+  }
+  .tabs button:hover:not(.active) { color: var(--text); }
+  .tabs button.active {
+    background: #fff; color: var(--text);
+    box-shadow: 0 1px 2px rgba(0,0,0,.15);
+  }
+
+  .pager { display: inline-flex; align-items: center; gap: 10px; font-size: 0.9rem; color: var(--text-2); }
+  .pager .pg-label { padding: 0 2px; font-weight: 500; white-space: nowrap; font-size: 0.88rem; }
+  .pager button {
+    appearance: none; cursor: pointer;
+    width: 34px; height: 34px; border-radius: 8px; color: var(--text-3);
+    background: #fff; border: 1px solid var(--border);
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: border-color .12s ease, color .12s ease;
+  }
+  .pager button:hover:not(:disabled) { border-color: #A8A29E; color: var(--text); }
+  .pager button:disabled { opacity: .35; cursor: default; }
+  .pager svg { width: 15px; height: 15px; }
+
+  /* ---------- Month groups ---------- */
+  .month-head {
+    font-size: 1.15rem; font-weight: 700; letter-spacing: -0.02em;
+    margin: 30px 0 14px;
+  }
+  .month-head:first-child { margin-top: 0; }
+
+  /* ---------- Incidents ---------- */
+  .incident {
+    display: flex; gap: 14px; padding: 16px 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .incident:last-child { border-bottom: none; }
+  .incident .i-icon {
+    width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; margin-top: 1px;
+    display: inline-flex; align-items: center; justify-content: center; color: #fff;
+  }
+  .incident .i-icon svg { width: 11px; height: 11px; }
+  .incident .i-icon.open { background: var(--red); }
+  .incident .i-icon.closed { background: var(--text-3); }
+  .incident .i-body { flex: 1; min-width: 0; }
+  .incident .i-title { font-weight: 600; font-size: 0.95rem; color: var(--red); }
+  .incident.closed .i-title { color: var(--accent); }
+  .incident .i-text {
+    font-size: 0.88rem; color: var(--text-2); margin-top: 4px;
+    white-space: pre-line; word-wrap: break-word;
+  }
+  .incident .i-text.clamped {
+    display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .incident .i-meta { font-size: 0.82rem; color: var(--text-3); margin-top: 6px; }
+  .incident .i-state {
+    font-size: 0.72rem; font-weight: 600; letter-spacing: .01em;
+    border-radius: 999px; padding: 2px 9px; margin-left: 8px; vertical-align: 1px;
+    background: var(--red-bg); color: var(--red); white-space: nowrap;
+  }
+
+  .show-all {
+    appearance: none; border: 1px solid var(--border); background: var(--card);
+    width: 100%; padding: 11px; border-radius: 10px; cursor: pointer;
+    font: inherit; font-size: 0.86rem; font-weight: 500; color: var(--text-2);
+    transition: background .12s ease;
+  }
+  .show-all:hover { background: var(--sand); }
+
+  /* ---------- Uptime calendars ---------- */
+  .toolbar-right { display: flex; align-items: center; gap: 14px; }
+
+  /* Component picker — follows the app's modal spec:
+     .input-field-compact (38px, radius 8, 13px, chevron 16px #78716C sw 1.5) */
+  .uptime-controls { margin-bottom: 18px; max-width: 260px; }
+  .comp-select {
+    appearance: none; -webkit-appearance: none;
+    width: 100%; height: 38px; padding: 0 40px 0 12px;
+    font: inherit; font-size: 13px; color: var(--text);
+    background-color: #fff; border: 1px solid var(--border); border-radius: 8px;
+    cursor: pointer; outline: none; transition: all .15s ease;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2378716C' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 12px center;
+    background-size: 16px 16px;
+  }
+  .comp-select:focus { border-color: #A8A29E; box-shadow: none; }
+
+  .months-grid { display: flex; justify-content: space-between; gap: 32px; flex-wrap: wrap; }
+  .mcal { position: relative; }
+  .mcal .m-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 8px; margin-bottom: 10px;
+  }
+  .mcal .m-name { font-weight: 600; font-size: 0.95rem; }
+  .mcal .m-pct { font-size: 0.82rem; color: var(--text-3); font-weight: 500; white-space: nowrap; }
+  .mcal .m-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 34px);
+    grid-auto-rows: 34px;
+    gap: 7px;
+  }
+  .mcal .m-grid i { border-radius: 5px; background: #EFEDEA; }
+  .mcal .m-grid i.blank { background: transparent; }
+  .mcal .m-grid i.up { background: #4ADE80; }
+  .mcal .m-grid i.partial { background: #FBBF24; }
+  .mcal .m-grid i.down { background: #F33535; }
+  .mcal .m-grid i[data-d] { cursor: default; }
+  .mcal .m-grid i[data-d]:hover { filter: brightness(0.82); }
+
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 22px; font-size: 0.8rem; color: var(--text-3); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+
+  /* ---------- Day tooltip (same as index) ---------- */
+  .daytip {
+    position: absolute; display: none; z-index: 20;
+    background: #fff; border: 1px solid var(--border); border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(28,25,23,.10), 0 2px 6px rgba(28,25,23,.06);
+    padding: 12px 16px; min-width: 230px; max-width: 280px;
+    transform: translateX(-50%);
+  }
+  .daytip::after {
+    content: ''; position: absolute; left: var(--ax, 50%); bottom: -6px;
+    width: 10px; height: 10px; background: #fff;
+    border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    transform: translateX(-50%) rotate(45deg);
+  }
+  .daytip .dt-date { font-weight: 600; font-size: 0.92rem; margin-bottom: 6px; }
+  .daytip .dt-msg { font-size: 0.84rem; color: var(--text-2); }
+  .daytip .dt-row {
+    display: flex; justify-content: space-between; align-items: center; gap: 18px;
+    background: var(--sand); border-radius: 6px; padding: 7px 12px;
+    font-size: 0.84rem;
+  }
+  .daytip .dt-row span { white-space: nowrap; }
+  .daytip .dt-row b { font-weight: 600; white-space: nowrap; }
+  .daytip .dt-rel-label {
+    font-size: 0.68rem; font-weight: 600; letter-spacing: .06em;
+    text-transform: uppercase; color: var(--text-3); margin: 12px 0 4px;
+  }
+  .daytip .dt-rel a {
+    display: block;
+    font-size: 0.82rem; font-weight: 500; line-height: 1.45;
+    color: var(--text-2); padding: 2px 0;
+  }
+  .daytip .dt-rel a:hover { color: var(--text); text-decoration: underline; }
+
+  .empty { color: var(--text-3); font-size: 0.9rem; padding: 8px 0 4px; }
+
+  /* ---------- Footer ---------- */
+  footer {
+    margin-top: 40px; padding: 22px 0 30px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 0.82rem; color: var(--text-3);
+  }
+  footer a { color: var(--text-3); }
+  footer a:hover { color: var(--accent); }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 900px) {
+    .months-grid { gap: 26px; }
+  }
+  @media (max-width: 700px) {
+    .wrap { padding: 0 16px; }
+    .uptime-controls { max-width: none; }
+    .toolbar-right { width: 100%; justify-content: flex-end; }
+  }
+  @media (max-width: 560px) {
+    .topbar .wrap { gap: 8px; height: 56px; }
+    .topbar .page-sub { display: none; }
+    .topbar .page-title { font-size: 16px; }
+    .btn-sand { height: 32px; padding: 0 10px; font-size: 12px; }
+    .btn-sand.hide-sm, .topbar .v-divider { display: none; }
+    .toolbar { margin: 20px 0; gap: 10px; }
+    .tabs { display: flex; width: 100%; }
+    .tabs button { flex: 1; text-align: center; }
+    .pager { width: 100%; justify-content: space-between; }
+    .incident { padding: 14px 0; gap: 10px; }
+    .incident .i-text { font-size: 0.84rem; }
+    footer { flex-direction: column; gap: 8px; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <a href="./" style="display:inline-flex"><img class="logo" src="logo.svg" alt="BookingPilot"></a>
+    <div class="title-stack">
+      <div class="page-title">Status</div>
+      <div class="page-sub">BookingPilot platform health</div>
+    </div>
+    <div class="spacer"></div>
+    <a class="btn-sand hide-sm" href="https://bookingpilot.al">bookingpilot.al</a>
+    <a class="btn-sand hide-sm" href="https://github.com/martingoga/status/issues">Report an issue</a>
+    <span class="v-divider" aria-hidden="true"></span>
+    <a class="btn-sand" href="./"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;margin-right:6px"><path d="m15 18-6-6 6-6"/></svg>Current Status</a>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="toolbar">
+    <div class="tabs" role="tablist">
+      <button id="tabIncidents" role="tab" onclick="setTab('incidents')">Incidents</button>
+      <button id="tabUptime" role="tab" onclick="setTab('uptime')">Uptime</button>
+    </div>
+    <div class="toolbar-right">
+      <div class="pager">
+        <button id="pgPrev" onclick="shiftWindow(1)" aria-label="Earlier months">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        </button>
+        <span class="pg-label" id="pgLabel"></span>
+        <button id="pgNext" onclick="shiftWindow(-1)" aria-label="Later months">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="incidentsPane"><div class="empty">Loading…</div></div>
+
+  <div id="uptimePane" style="display:none">
+    <div class="uptime-controls">
+      <select id="compSelect" class="comp-select" onchange="compSlug = this.value; try { localStorage.setItem('statusComp', compSlug); } catch {} renderUptime(); this.blur();" aria-label="Component"></select>
+    </div>
+    <div class="months-grid" id="monthsGrid"></div>
+    <div class="legend">
+      <span><i style="background:#4ADE80"></i>Operational</span>
+      <span><i style="background:#FBBF24"></i>Partial outage</span>
+      <span><i style="background:#F33535"></i>Major outage</span>
+      <span><i style="background:#EFEDEA"></i>No data</span>
+    </div>
+  </div>
+
+  <footer>
+    <span id="updatedLine">Monitored by BookingPilot</span>
+  </footer>
+</div>
+
+<div class="daytip" id="daytip"></div>
+
+<script>
+const REPO = 'martingoga/status';
+const SUMMARY_URL = `https://raw.githubusercontent.com/${REPO}/master/history/summary.json`;
+const ISSUES_PAGE = (page) => `https://api.github.com/repos/${REPO}/issues?state=all&labels=status&per_page=100&page=${page}&sort=created&direction=desc`;
+const WINDOW = 3;              // months shown per page
+const INC_PER_MONTH = 5;       // collapsed incidents per month
+
+let SITES = [];
+let ISSUES = [];
+let repoCreated = 0;
+let winOffset = 0;             // 0 = window ends at current month; +1 shifts earlier
+let tab = 'incidents';
+let compSlug = null;
+const expanded = new Set();    // month keys with all incidents shown
+
+/* Smooth page-out when navigating back to Current Status — only needed
+   where cross-document view transitions aren't supported. */
+if (!('startViewTransition' in document)) {
+  document.querySelectorAll('a[href="./"]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.body.classList.add('leaving');
+      setTimeout(() => { location.href = './'; }, 150);
+    });
+  });
+  window.addEventListener('pageshow', (e) => {
+    if (e.persisted) document.body.classList.remove('leaving');
+  });
+}
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const dayMs = 86400000;
+const dayStart = (t) => { const d = new Date(t); return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()); };
+const fmtDay = (t) => new Date(t).toLocaleDateString('en-GB', { timeZone: 'UTC', day: 'numeric', month: 'short', year: 'numeric' });
+const fmtMonth = (y, m) => new Date(Date.UTC(y, m, 1)).toLocaleDateString('en-GB', { timeZone: 'UTC', month: 'long', year: 'numeric' });
+const fmtTimeUTC = (d) => new Date(d).toLocaleDateString('en-GB', { timeZone: 'UTC', day: 'numeric', month: 'short' })
+  + ', ' + new Date(d).toLocaleTimeString('en-GB', { timeZone: 'UTC', hour: '2-digit', minute: '2-digit' }) + ' UTC';
+const ago = (d) => {
+  const s = Math.max(0, (Date.now() - new Date(d)) / 1000);
+  if (s < 90) return 'just now';
+  if (s < 3600) return Math.floor(s / 60) + 'm ago';
+  if (s < 86400) return Math.floor(s / 3600) + 'h ago';
+  return Math.floor(s / 86400) + 'd ago';
+};
+
+/* Same public-component list as the main page. */
+const DISPLAY = {
+  'web-app': 'Website',
+  'api-and-database': 'Platform API',
+  'authentication': 'Login & accounts',
+  'reservations': 'Bookings',
+  'email-delivery': 'Email',
+  'sync-pipeline': 'Booking channel sync',
+  'realtime': 'Live updates',
+  'ai-assistant': 'AI assistant',
+};
+const publicSites = () => SITES.filter(s => s.slug in DISPLAY);
+
+function issueSlug(i) {
+  const names = (i.labels || []).map(l => l.name).find(n => n !== 'status' && SITES.some(s => s.slug === n));
+  if (names) return names;
+  const t = (i.title || '').toLowerCase();
+  const hit = SITES.find(s => t.includes(s.name.toLowerCase()) || t.includes(s.slug.replace(/-/g, ' ')));
+  return hit ? hit.slug : null;
+}
+
+/* ---------- Month model ---------- */
+// Months are addressed as a linear index (y*12+m) so windows can span years.
+const curMonthIdx = () => { const n = new Date(); return n.getUTCFullYear() * 12 + n.getUTCMonth(); };
+const idxToYM = (idx) => ({ y: Math.floor(idx / 12), m: idx % 12 });
+
+// Always WINDOW consecutive months ending at (current month − winOffset*WINDOW).
+// Months before monitoring started render as empty/no-data — same as GitHub.
+function windowMonths() {
+  const end = curMonthIdx() - winOffset * WINDOW;
+  const out = [];
+  for (let i = WINDOW - 1; i >= 0; i--) out.push(idxToYM(end - i));
+  return out;
+}
+
+// Earliest month worth showing: the repo-creation month (fallback: 5y back).
+function firstMonthIdx() {
+  if (repoCreated) {
+    const d = new Date(repoCreated);
+    return d.getUTCFullYear() * 12 + d.getUTCMonth();
+  }
+  return curMonthIdx() - 60;
+}
+
+function renderPager() {
+  const win = windowMonths();
+  $('pgLabel').textContent = fmtMonth(win[0].y, win[0].m) + ' to ' + fmtMonth(win[win.length - 1].y, win[win.length - 1].m);
+  const endIdx = curMonthIdx() - winOffset * WINDOW;
+  // Prev is useless once the next window would be entirely pre-monitoring.
+  $('pgPrev').disabled = endIdx - WINDOW < firstMonthIdx();
+  $('pgNext').disabled = winOffset <= 0;
+}
+
+function shiftWindow(dir) {
+  const next = winOffset + dir;
+  if (next < 0) return;
+  if (curMonthIdx() - next * WINDOW < firstMonthIdx()) return;
+  winOffset = next;
+  render();
+}
+
+/* ---------- Incidents ---------- */
+function monthKey(i) {
+  const d = new Date(i.created_at);
+  return d.getUTCFullYear() * 12 + d.getUTCMonth();
+}
+
+const INFO_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 8h.01"/><path d="M12 11v5"/></svg>';
+
+function renderIncidents() {
+  const issues = ISSUES.filter(i => { const s = issueSlug(i); return !s || s in DISPLAY; });
+  if (!issues.length) { $('incidentsPane').innerHTML = '<div class="empty">No incidents on record.</div>'; return; }
+
+  const groups = new Map();
+  issues.forEach(i => {
+    const k = monthKey(i);
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push(i);
+  });
+
+  const html = windowMonths().slice().reverse().map(({ y, m }) => {
+    const list = groups.get(y * 12 + m) || [];
+    const shown = expanded.has(y * 12 + m) ? list : list.slice(0, INC_PER_MONTH);
+    const cards = shown.map(i => {
+      const open = i.state === 'open';
+      const title = i.title.replace(/[🛑✅⚠️]|Resolved:/gu, '').trim();
+      const body = (i.body || '').replace(/<!--[\s\S]*?-->/g, '').trim();
+      const meta = open
+        ? `Opened ${fmtTimeUTC(i.created_at)} · ongoing`
+        : `${fmtTimeUTC(i.created_at)} – ${fmtTimeUTC(i.closed_at)}`;
+      return `
+      <div class="incident ${open ? '' : 'closed'}">
+        <span class="i-icon ${open ? 'open' : 'closed'}">${INFO_ICON}</span>
+        <div class="i-body">
+          <div class="i-title">${esc(title)}${open ? '<span class="i-state">Ongoing</span>' : ''}</div>
+          ${body ? `<div class="i-text">${esc(body)}</div>` : ''}
+          <div class="i-meta">${meta}</div>
+        </div>
+      </div>`;
+    }).join('');
+    const more = list.length > shown.length
+      ? `<button class="show-all" onclick="expandMonth(${y * 12 + m})">+ Show All ${list.length} Incidents</button>` : '';
+    const empty = !list.length ? '<div class="empty">No incidents reported.</div>' : '';
+    return `<h3 class="month-head">${fmtMonth(y, m)}</h3>${cards}${empty}${more}`;
+  }).join('');
+
+  $('incidentsPane').innerHTML = html;
+}
+
+function expandMonth(k) { expanded.add(k); renderIncidents(); }
+
+/* ---------- Uptime ---------- */
+// If the site is down with an open incident, downtime has been continuous
+// since it opened — dailyMinutesDown undercounts when checks run sparsely,
+// so the incident window is the better source of truth (same rule as index).
+function siteDownSince(site) {
+  if ((site.status || '').toLowerCase() !== 'down') return 0;
+  const inc = ISSUES.find(i => i.state === 'open' && issueSlug(i) === site.slug);
+  return inc ? new Date(inc.created_at).getTime() : 0;
+}
+
+function dayDownMinutes(site, ds) {
+  const key = new Date(ds).toISOString().slice(0, 10);
+  let m = (site.dailyMinutesDown || {})[key] || 0;
+  const since = siteDownSince(site);
+  if (since) {
+    const ov = Math.max(0, Math.min(Date.now(), ds + dayMs) - Math.max(since, ds));
+    m = Math.max(m, ov / 60000);
+  }
+  return m;
+}
+
+function dayState(site, ds) {
+  // ds = UTC day-start ms. Returns 'up' | 'partial' | 'down' | 'nodata'.
+  if (repoCreated && ds + dayMs < repoCreated) return 'nodata';
+  if (ds > Date.now()) return 'nodata';
+  const start = Math.max(ds, repoCreated || 0);
+  const end = Math.min(ds + dayMs, Date.now());
+  if (end <= start) return 'nodata';
+  const m = dayDownMinutes(site, ds);
+  const monitoredMin = (end - start) / 60000;
+  // Down = the outage covered the majority of the monitored day; a hard
+  // 720-min floor would call a 6.5h total outage a mere "partial".
+  if (m > 0 && m / monitoredMin >= 0.5) return 'down';
+  if (m > 0) return 'partial';
+  return 'up';
+}
+
+function monthUptime(site, y, m) {
+  const first = Date.UTC(y, m, 1);
+  const next = Date.UTC(y, m + 1, 1);
+  const start = Math.max(first, repoCreated || 0);
+  const end = Math.min(next, Date.now());
+  if (end <= start) return null;
+  let down = 0;
+  for (let ds = first; ds < next; ds += dayMs) down += dayDownMinutes(site, ds);
+  const monitored = (end - start) / 60000;
+  return Math.max(0, (1 - down / monitored) * 100);
+}
+
+function renderUptime() {
+  const site = SITES.find(s => s.slug === compSlug);
+  if (!site) { $('monthsGrid').innerHTML = '<div class="empty">No data.</div>'; return; }
+  const now = Date.now();
+
+  $('monthsGrid').innerHTML = windowMonths().map(({ y, m }) => {
+    const first = Date.UTC(y, m, 1);
+    const days = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
+    // Leading blanks so day 1 sits on its weekday row (Monday-first).
+    const lead = (new Date(first).getUTCDay() + 6) % 7;
+    let cells = '<i class="blank"></i>'.repeat(lead);
+    for (let d = 0; d < days; d++) {
+      const ds = first + d * dayMs;
+      const st = dayState(site, ds);
+      const mins = dayDownMinutes(site, ds);
+      cells += st === 'nodata'
+        ? `<i data-d="${fmtDay(ds)}" data-t="${ds}"></i>`
+        : `<i class="${st}" data-d="${fmtDay(ds)}" data-t="${ds}" data-m="${Math.round(mins)}"></i>`;
+    }
+    const pct = monthUptime(site, y, m);
+    return `
+    <div class="mcal">
+      <div class="m-head">
+        <span class="m-name">${fmtMonth(y, m)}</span>
+        <span class="m-pct">${pct !== null ? pct.toFixed(2) + '%' : '—'}</span>
+      </div>
+      <div class="m-grid">${cells}</div>
+    </div>`;
+  }).join('');
+  wireTips();
+}
+
+/* Incidents overlapping a UTC day for the selected component. */
+function relatedIssues(ds) {
+  const dayEnd = ds + dayMs, now = Date.now();
+  return ISSUES.filter(i => {
+    if (issueSlug(i) !== compSlug) return false;
+    const t0 = new Date(i.created_at).getTime();
+    const t1 = i.closed_at ? new Date(i.closed_at).getTime() : now;
+    return t0 < dayEnd && t1 > ds;
+  });
+}
+
+function wireTips() {
+  const tip = $('daytip');
+  let hideTimer = null;
+  const hide = () => { tip.style.display = 'none'; };
+  const hideSoon = () => { clearTimeout(hideTimer); hideTimer = setTimeout(hide, 250); };
+  const stayOpen = () => clearTimeout(hideTimer);
+  tip.addEventListener('mouseenter', stayOpen);
+  tip.addEventListener('mouseleave', hide);
+
+  document.querySelectorAll('.mcal').forEach(cal => {
+    const grid = cal.querySelector('.m-grid');
+    const showFor = (bar) => {
+      // Moving across the gaps between cells must not hide the tooltip —
+      // only leaving the grid (or hovering a blank spacer) closes it.
+      if (!bar) return;
+      if (!bar.dataset.d || bar.classList.contains('blank')) { hideSoon(); return; }
+      stayOpen();
+      const m = bar.dataset.m;
+      let inner = `<div class="dt-date">${bar.dataset.d}</div>`;
+      if (m === undefined) inner += '<div class="dt-msg">No data for this day.</div>';
+      else if (+m <= 0) inner += '<div class="dt-msg">No downtime recorded.</div>';
+      else {
+        const mm = +m, h = Math.floor(mm / 60), r = Math.round(mm % 60);
+        const down = bar.classList.contains('down');
+        inner += `<div class="dt-row"><span>${down ? 'Major outage' : 'Partial outage'}</span><b>${h} hrs ${r} mins</b></div>`;
+      }
+      // Related incidents for that day (GitHub-style), linked to the report.
+      const rel = relatedIssues(+bar.dataset.t);
+      if (rel.length) {
+        inner += '<div class="dt-rel-label">Related</div><div class="dt-rel">'
+          + rel.map(i => {
+              const title = i.title.replace(/[🛑✅⚠️]|Resolved:/gu, '').trim();
+              return `<a href="${esc(i.html_url)}" target="_blank" rel="noopener">${esc(title)}</a>`;
+            }).join('')
+          + '</div>';
+      }
+      tip.innerHTML = inner;
+      tip.style.display = 'block';
+      const br = bar.getBoundingClientRect();
+      let left = br.left + br.width / 2;
+      const half = tip.offsetWidth / 2;
+      if (left - half < 8) left = 8 + half;
+      if (left + half > window.innerWidth - 8) left = window.innerWidth - 8 - half;
+      tip.style.left = left + 'px';
+      tip.style.setProperty('--ax', (br.left + br.width / 2 - left + half) + 'px');
+      tip.style.top = (br.top + window.scrollY - tip.offsetHeight - 10) + 'px';
+      tip.style.position = 'absolute';
+    };
+    grid.addEventListener('mousemove', (e) => showFor(e.target.closest('i')));
+    grid.addEventListener('mouseleave', hideSoon);
+    grid.addEventListener('click', (e) => showFor(e.target.closest('i')));
+  });
+}
+document.addEventListener('touchstart', (e) => {
+  if (!e.target.closest('.m-grid') && !e.target.closest('.daytip')) $('daytip').style.display = 'none';
+}, { passive: true });
+
+/* ---------- Tabs ---------- */
+function setTab(t) {
+  tab = t;
+  history.replaceState(null, '', '#' + t);
+  $('tabIncidents').classList.toggle('active', t === 'incidents');
+  $('tabUptime').classList.toggle('active', t === 'uptime');
+  $('incidentsPane').style.display = t === 'incidents' ? '' : 'none';
+  $('uptimePane').style.display = t === 'uptime' ? '' : 'none';
+}
+
+function render() {
+  renderPager();
+  renderIncidents();
+  renderUptime();
+}
+
+/* ---------- Data ---------- */
+async function fetchAllIssues() {
+  const out = [];
+  for (let page = 1; page <= 20; page++) {
+    const res = await fetch(ISSUES_PAGE(page));
+    if (!res.ok) break;
+    const batch = (await res.json()).filter(i => !i.pull_request);
+    out.push(...batch);
+    if (batch.length < 100) break;
+  }
+  return out;
+}
+
+async function load() {
+  try {
+    const res = await fetch(SUMMARY_URL + '?t=' + Date.now(), { cache: 'no-store' });
+    SITES = res.ok ? await res.json() : [];
+    const lm = res.headers.get('Last-Modified');
+    $('updatedLine').textContent = lm
+      ? 'Data updated ' + ago(lm) + ' · monitored by BookingPilot'
+      : 'Monitored by BookingPilot';
+  } catch { SITES = []; }
+
+  try {
+    const [issues, repoRes] = await Promise.all([
+      fetchAllIssues(),
+      fetch(`https://api.github.com/repos/${REPO}`).catch(() => null),
+    ]);
+    ISSUES = issues;
+    if (repoRes && repoRes.ok) repoCreated = new Date((await repoRes.json()).created_at).getTime();
+  } catch { /* partial data still renders */ }
+
+  const sel = $('compSelect');
+  const pub = publicSites();
+  sel.innerHTML = pub.map(s => `<option value="${esc(s.slug)}">${esc(DISPLAY[s.slug])}</option>`).join('');
+  let saved = null;
+  try { saved = localStorage.getItem('statusComp'); } catch {}
+  compSlug = pub.find(s => s.slug === saved)?.slug || (pub.length ? pub[0].slug : null);
+  if (compSlug) sel.value = compSlug;
+
+  setTab(location.hash === '#uptime' ? 'uptime' : 'incidents');
+  render();
+}
+
+load();
+</script>
+</body>
+</html>
