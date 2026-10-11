@@ -279,6 +279,20 @@
     .incident .i-text { font-size: 0.84rem; }
     footer { flex-direction: column; gap: 8px; align-items: flex-start; }
   }
+
+  /* ---------- Scrollbar (matches the app's index.css) ---------- */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background-color: var(--border); border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background-color: #D6D3D1; }
+  @supports not selector(::-webkit-scrollbar) {
+    * { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+  }
+
+  /* Lenis smooth scroll (self-hosted lenis.min.js) */
+  html.lenis, html.lenis body { height: auto; }
+  .lenis.lenis-smooth { scroll-behavior: auto !important; }
 </style>
 </head>
 <body>
@@ -707,6 +721,16 @@ async function load() {
 }
 
 load();
+</script>
+<script src="lenis.min.js"></script>
+<script>
+/* Lenis smooth scroll — same config as the marketing site (duration 1.1,
+   anchors glide). Self-hosted so a CDN outage can't break the page. */
+if (typeof Lenis === 'function') {
+  const lenis = new Lenis({ duration: 1.1, anchors: true });
+  const raf = (t) => { lenis.raf(t); requestAnimationFrame(raf); };
+  requestAnimationFrame(raf);
+}
 </script>
 </body>
 </html>
