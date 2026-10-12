@@ -1,7 +1,7 @@
-url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=sync
+url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=sync&key=***REMOVED***
 status: up
 code: 200
-responseTime: 761
-lastUpdated: 2026-10-12T01:58:00.509Z
+responseTime: 635
+lastUpdated: 2026-10-12T20:47:39.296Z
 startTime: 2026-10-07T19:30:48.089Z
 generator: Upptime <https://github.com/upptime/upptime>
