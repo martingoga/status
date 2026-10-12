@@ -46,7 +46,7 @@ sites:
 
   # Same function, auth component — probes GoTrue server-side.
   - name: Authentication
-    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=auth
+    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=auth&key=***REMOVED***
     icon: https://martingoga.github.io/status/icons/shield.svg
     expectedStatusCodes:
       - 200
@@ -65,7 +65,7 @@ sites:
 
   # Booking pipeline — real read on the reservations table.
   - name: Reservations
-    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=reservations
+    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=reservations&key=***REMOVED***
     icon: https://martingoga.github.io/status/icons/cal.svg
     expectedStatusCodes:
       - 200
@@ -74,7 +74,7 @@ sites:
 
   # Supabase Realtime — websocket endpoint liveness.
   - name: Realtime
-    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=realtime
+    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=realtime&key=***REMOVED***
     icon: https://martingoga.github.io/status/icons/pulse.svg
     expectedStatusCodes:
       - 200
@@ -83,7 +83,7 @@ sites:
 
   # File storage — real listing on the hk-attachments bucket.
   - name: File storage
-    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=storage
+    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=storage&key=***REMOVED***
     icon: https://martingoga.github.io/status/icons/db.svg
     expectedStatusCodes:
       - 200
@@ -92,7 +92,7 @@ sites:
 
   # Transactional email — Resend API reachability + key presence.
   - name: Email delivery
-    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=email
+    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=email&key=***REMOVED***
     icon: https://martingoga.github.io/status/icons/mail.svg
     expectedStatusCodes:
       - 200
@@ -102,7 +102,7 @@ sites:
   # OTA distribution — api.channex.io reachability + API-key validity
   # (401 while a key is configured = down; the key IS the pipeline).
   - name: Channel manager
-    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=channex
+    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=channex&key=***REMOVED***
     icon: https://martingoga.github.io/status/icons/plug.svg
     expectedStatusCodes:
       - 200
@@ -113,7 +113,7 @@ sites:
   # beat is written by pg_cron every 5 min, so a stale beat means the
   # scheduler (or DB writes) silently died.
   - name: Schedulers
-    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=jobs
+    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=jobs&key=***REMOVED***
     icon: https://martingoga.github.io/status/icons/clock.svg
     expectedStatusCodes:
       - 200
@@ -124,7 +124,7 @@ sites:
   # min old (or never stamped) means bookings stopped flowing even though
   # api.channex.io answers pings.
   - name: Sync pipeline
-    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=sync
+    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=sync&key=***REMOVED***
     icon: https://martingoga.github.io/status/icons/pulse.svg
     expectedStatusCodes:
       - 200
@@ -136,7 +136,7 @@ sites:
   # answering (4xx expected); 404 or 5xx = broken. These are the functions
   # that fail silently and hurt the most (auth emails, OTA bookings).
   - name: Webhooks & hooks
-    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=edge
+    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=edge&key=***REMOVED***
     icon: https://martingoga.github.io/status/icons/link.svg
     expectedStatusCodes:
       - 200
@@ -145,7 +145,7 @@ sites:
 
   # AI assistant — api.groq.com reachability + GROQ_API_KEY validity.
   - name: AI assistant
-    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=groq
+    url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=groq&key=***REMOVED***
     icon: https://martingoga.github.io/status/icons/spark.svg
     expectedStatusCodes:
       - 200
