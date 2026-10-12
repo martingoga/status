@@ -1,7 +1,7 @@
-url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=reservations
+url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=reservations&key=***REMOVED***
 status: up
 code: 200
-responseTime: 837
-lastUpdated: 2026-10-12T01:57:54.128Z
+responseTime: 634
+lastUpdated: 2026-10-12T20:47:34.113Z
 startTime: 2026-10-07T18:28:28.757Z
 generator: Upptime <https://github.com/upptime/upptime>
