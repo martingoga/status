@@ -1,7 +1,7 @@
 url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=storage&key=***REMOVED***
 status: up
 code: 200
-responseTime: 626
-lastUpdated: 2026-10-13T03:18:36.793Z
+responseTime: 566
+lastUpdated: 2026-10-14T01:30:41.481Z
 startTime: 2026-10-07T18:28:32.197Z
 generator: Upptime <https://github.com/upptime/upptime>
