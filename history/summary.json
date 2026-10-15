@@ -69,11 +69,11 @@
     "icon": "https://martingoga.github.io/status/icons/shield.svg",
     "slug": "authentication",
     "status": "down",
-    "uptime": "99.98%",
-    "uptimeDay": "99.82%",
+    "uptime": "99.97%",
+    "uptimeDay": "99.80%",
     "uptimeWeek": "99.97%",
-    "uptimeMonth": "99.98%",
-    "uptimeYear": "99.98%",
+    "uptimeMonth": "99.97%",
+    "uptimeYear": "99.97%",
     "time": 441,
     "timeDay": 281,
     "timeWeek": 444,
@@ -90,8 +90,8 @@
     "slug": "auth-service-direct",
     "status": "down",
     "uptime": "99.98%",
-    "uptimeDay": "99.83%",
-    "uptimeWeek": "99.98%",
+    "uptimeDay": "99.81%",
+    "uptimeWeek": "99.97%",
     "uptimeMonth": "99.98%",
     "uptimeYear": "99.98%",
     "time": 193,
@@ -100,7 +100,7 @@
     "timeMonth": 193,
     "timeYear": 193,
     "dailyMinutesDown": {
-      "2026-10-15": 2
+      "2026-10-15": 3
     }
   },
   {
@@ -110,7 +110,7 @@
     "slug": "reservations",
     "status": "down",
     "uptime": "99.98%",
-    "uptimeDay": "99.85%",
+    "uptimeDay": "99.83%",
     "uptimeWeek": "99.98%",
     "uptimeMonth": "99.98%",
     "uptimeYear": "99.98%",
@@ -130,7 +130,7 @@
     "slug": "realtime",
     "status": "down",
     "uptime": "99.98%",
-    "uptimeDay": "99.86%",
+    "uptimeDay": "99.85%",
     "uptimeWeek": "99.98%",
     "uptimeMonth": "99.98%",
     "uptimeYear": "99.98%",
@@ -150,7 +150,7 @@
     "slug": "file-storage",
     "status": "down",
     "uptime": "99.98%",
-    "uptimeDay": "99.88%",
+    "uptimeDay": "99.86%",
     "uptimeWeek": "99.98%",
     "uptimeMonth": "99.98%",
     "uptimeYear": "99.98%",
@@ -169,18 +169,18 @@
     "icon": "https://martingoga.github.io/status/icons/mail.svg",
     "slug": "email-delivery",
     "status": "down",
-    "uptime": "99.99%",
-    "uptimeDay": "99.90%",
-    "uptimeWeek": "99.99%",
-    "uptimeMonth": "99.99%",
-    "uptimeYear": "99.99%",
+    "uptime": "99.98%",
+    "uptimeDay": "99.88%",
+    "uptimeWeek": "99.98%",
+    "uptimeMonth": "99.98%",
+    "uptimeYear": "99.98%",
     "time": 394,
     "timeDay": 252,
     "timeWeek": 397,
     "timeMonth": 394,
     "timeYear": 394,
     "dailyMinutesDown": {
-      "2026-10-15": 1
+      "2026-10-15": 2
     }
   },
   {
@@ -190,7 +190,7 @@
     "slug": "channel-manager",
     "status": "down",
     "uptime": "99.99%",
-    "uptimeDay": "99.92%",
+    "uptimeDay": "99.90%",
     "uptimeWeek": "99.99%",
     "uptimeMonth": "99.99%",
     "uptimeYear": "99.99%",
@@ -210,7 +210,7 @@
     "slug": "schedulers",
     "status": "down",
     "uptime": "99.99%",
-    "uptimeDay": "99.93%",
+    "uptimeDay": "99.91%",
     "uptimeWeek": "99.99%",
     "uptimeMonth": "99.99%",
     "uptimeYear": "99.99%",
@@ -230,7 +230,7 @@
     "slug": "sync-pipeline",
     "status": "down",
     "uptime": "99.81%",
-    "uptimeDay": "99.95%",
+    "uptimeDay": "99.93%",
     "uptimeWeek": "99.99%",
     "uptimeMonth": "99.81%",
     "uptimeYear": "99.81%",
@@ -250,18 +250,18 @@
     "icon": "https://martingoga.github.io/status/icons/link.svg",
     "slug": "webhooks-and-hooks",
     "status": "down",
-    "uptime": "100.00%",
-    "uptimeDay": "99.97%",
-    "uptimeWeek": "100.00%",
-    "uptimeMonth": "100.00%",
-    "uptimeYear": "100.00%",
+    "uptime": "99.99%",
+    "uptimeDay": "99.95%",
+    "uptimeWeek": "99.99%",
+    "uptimeMonth": "99.99%",
+    "uptimeYear": "99.99%",
     "time": 520,
     "timeDay": 401,
     "timeWeek": 520,
     "timeMonth": 520,
     "timeYear": 520,
     "dailyMinutesDown": {
-      "2026-10-15": 0
+      "2026-10-15": 1
     }
   },
   {
@@ -271,7 +271,7 @@
     "slug": "ai-assistant",
     "status": "down",
     "uptime": "100.00%",
-    "uptimeDay": "99.98%",
+    "uptimeDay": "99.97%",
     "uptimeWeek": "100.00%",
     "uptimeMonth": "100.00%",
     "uptimeYear": "100.00%",
@@ -281,7 +281,7 @@
     "timeMonth": 330,
     "timeYear": 330,
     "dailyMinutesDown": {
-      "2026-10-15": 0
+      "2026-10-15": 1
     }
   },
   {
