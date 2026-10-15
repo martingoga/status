@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.github.com https://raw.githubusercontent.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>BookingPilot Status — History</title>
 <meta name="description" content="Incident and uptime history for the BookingPilot platform.">
 <link rel="icon" type="image/svg+xml" href="logo.svg">
@@ -486,7 +487,14 @@ function renderIncidents() {
     const cards = shown.map(i => {
       const open = i.state === 'open';
       const title = i.title.replace(/[🛑✅⚠️]|Resolved:/gu, '').trim();
-      const body = (i.body || '').replace(/<!--[\s\S]*?-->/g, '').trim();
+      // Never render monitor target URLs — they expose internal endpoints
+      // (older bodies carried credentials in query params). Keep links to
+      // this repo (commit references) for traceability.
+      const body = (i.body || '')
+        .replace(/<!--[\s\S]*?-->/g, '')
+        .replace(/\((https?:\/\/(?!github\.com\/martingoga\/status\/)[^)\s]+)\)/g, '(endpoint withheld)')
+        .replace(/https?:\/\/(?!github\.com\/martingoga\/status\/)[^\s)]+/g, 'endpoint withheld')
+        .trim();
       const meta = open
         ? `Opened ${fmtTimeUTC(i.created_at)} · ongoing`
         : `${fmtTimeUTC(i.created_at)} – ${fmtTimeUTC(i.closed_at)}`;
