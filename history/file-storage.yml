@@ -1,7 +1,7 @@
 url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=storage
-status: down
-code: 401
-responseTime: 246
-lastUpdated: 2026-10-15T13:59:34.933Z
+status: up
+code: 200
+responseTime: 964
+lastUpdated: 2026-10-15T14:03:35.151Z
 startTime: 2026-10-07T18:28:32.197Z
 generator: Upptime <https://github.com/upptime/upptime>
