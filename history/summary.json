@@ -16,7 +16,7 @@
     "timeMonth": 0,
     "timeYear": 0,
     "dailyMinutesDown": {
-      "2026-10-16": 210,
+      "2026-10-16": 382,
       "2026-10-15": 1440,
       "2026-10-14": 1440,
       "2026-10-13": 1440,
@@ -195,19 +195,19 @@
     "url": "https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=jobs",
     "icon": "https://martingoga.github.io/status/icons/clock.svg",
     "slug": "schedulers",
-    "status": "down",
-    "uptime": "99.10%",
-    "uptimeDay": "92.46%",
-    "uptimeWeek": "98.92%",
-    "uptimeMonth": "99.10%",
-    "uptimeYear": "99.10%",
-    "time": 707,
-    "timeDay": 817,
-    "timeWeek": 701,
-    "timeMonth": 707,
-    "timeYear": 707,
+    "status": "up",
+    "uptime": "97.70%",
+    "uptimeDay": "80.52%",
+    "uptimeWeek": "97.22%",
+    "uptimeMonth": "97.70%",
+    "uptimeYear": "97.70%",
+    "time": 755,
+    "timeDay": 919,
+    "timeWeek": 757,
+    "timeMonth": 755,
+    "timeYear": 755,
     "dailyMinutesDown": {
-      "2026-10-16": 109
+      "2026-10-16": 281
     }
   },
   {
