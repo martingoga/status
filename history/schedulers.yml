@@ -1,7 +1,7 @@
 url: https://ofhkpirywmghuoemqwuu.supabase.co/functions/v1/health?check=jobs
-status: up
-code: 200
-responseTime: 1048
-lastUpdated: 2026-10-16T01:00:38.352Z
+status: down
+code: 503
+responseTime: 612
+lastUpdated: 2026-10-16T01:41:27.839Z
 startTime: 2026-10-07T19:30:47.130Z
 generator: Upptime <https://github.com/upptime/upptime>
